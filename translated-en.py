@@ -16,7 +16,7 @@ regex = {
 }
 
 def _find_dats():
-    dat_files = [f for f in get_files("En-ROMs", glob_pattern="DATs\*")]
+    dat_files = [f for f in get_files("En-ROMs", glob_pattern="DATs\\*")]
     return dat_files
 
 def update_XML():

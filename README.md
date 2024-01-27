@@ -1,24 +1,29 @@
 # Auto DAT file generator
 
-![Daily WWW clrmamepro profiles](https://github.com/hugo19941994/auto-datfile-generator/workflows/Daily%20WWW%20clrmamepro%20profiles/badge.svg)
+![Daily Rebuild Status](https://github.com/dragredsim/auto-datfile-generator/actions/workflows/daily-rebuild.yml/badge.svg)
 
 WWW profiles to use in clrmamepro for the standard No-Intro and Redump sets.
-
 Refreshes once every 24h automatically.
 
 ## URLs
 
 ### No-Intro
 
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/no-intro.xml`
+`https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/no-intro.xml`
 
 ### No-Intro (parent-clone)
 
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/no-intro_parent-clone.xml`
+`https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/no-intro_parent-clone.xml`
 
 ### Redump
 
-`https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/redump.xml`
+`https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/redump.xml`
+
+### En-ROMs (from Archive.org)
+
+`https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/translated-en.xml`
+
+<!--- currently disabled
 
 ### Hardware Target Game Database
 
@@ -27,6 +32,8 @@ Refreshes once every 24h automatically.
 ### Custom dats.site
 
 `https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/dats-site.xml`
+
+--->
 
 ![clrmamepro screenshot](./img/clrmamepro.png)
 

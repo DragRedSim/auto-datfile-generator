@@ -8,15 +8,12 @@ verify_ssl = true
 [packages]
 # redump.py, dats-site.py, smdb.py
 requests = "*"
-
 # no-intro.py
 selenium = "*"
-
 # smdb.py
 lxml = "*"
-
 # translated-en.py
 internetarchive = "*"
 
 [requires]
-python_version = "3.9"
+python_version = "3"

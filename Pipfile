@@ -15,5 +15,8 @@ selenium = "*"
 # smdb.py
 lxml = "*"
 
+# translated-en.py
+internetarchive = "*"
+
 [requires]
 python_version = "3.9"

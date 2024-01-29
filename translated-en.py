@@ -8,11 +8,14 @@ from internetarchive import get_item, get_files
 URL_HOME      = "http://archive.org/details/En-ROMs"
 URL_DOWNLOADS = "https://archive.org/download/En-ROMs/DATs/"
 XML_FILENAME  = "translated-en.xml"
+XML_FILENAME_archive  = "translated-en-archive.xml"
 XML_URL       = "https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/translated-en.zip"
 
 regex = {
     #select anything after a directory separator that has "[T-En] Collection"
-    "name"      : r'([^/\\]*? \[T-En\] Collection)',
+    "dat_name"      : r'([^/\\]*? \[T-En\] Collection)',
+    "platform_name" : r'([^/\\]*?) \[T-En\] Collection',
+    "date"          : r'\((\d{1,2}-\d{1,2}-\d{4})\)'
 }
 
 def _find_dats():
@@ -29,6 +32,7 @@ def update_XML():
 
     # clrmamepro XML file
     tag_clrmamepro = ET.Element("clrmamepro")
+    tag_clrmamepro_archive = ET.Element("clrmamepro")
 
     for dat in dat_list:
         print(f"Downloading {dat}")
@@ -42,30 +46,37 @@ def update_XML():
                 
                 # section for this dat in the XML file
                 tag_datfile = ET.SubElement(tag_clrmamepro, "datfile")
+                tag_datfile_archive = ET.SubElement(tag_clrmamepro_archive, "datfile")
                 
                 # XML version
-                dat_date = datetime.datetime.utcfromtimestamp(dat.mtime).strftime("%d-%m-%Y")
+                dat_date = re.search(regex["date"], df).group(1)
                 ET.SubElement(tag_datfile, "version").text = dat_date
+                ET.SubElement(tag_datfile_archive, "version").text = dat_date
 
                 # XML name & description
-                temp_name = re.search(regex["name"], df).group(1)
                 # trim the - from the end (if exists)
-                ET.SubElement(tag_datfile, "name").text = df[:-4]
-                ET.SubElement(tag_datfile, "description").text = df[:-4]
+                ET.SubElement(tag_datfile, "name").text = re.search(regex["dat_name"], df).group(1)
+                ET.SubElement(tag_datfile_archive, "name").text = re.search(regex["dat_name"], df).group(1)
+                ET.SubElement(tag_datfile, "description").text = re.search(regex["platform_name"], df).group(1) + " - English Translations"
+                ET.SubElement(tag_datfile_archive, "description").text = re.search(regex["platform_name"], df).group(1) + " - English Translations"
 
                 # URL tag in XML
                 ET.SubElement(tag_datfile, "url").text = XML_URL
+                ET.SubElement(tag_datfile_archive, "url").text = dat.url
 
                 # File tag in XML
                 original_filename = df
                 filename = f"{original_filename[:-4]}.dat"
                 ET.SubElement(tag_datfile, "file").text = filename
+                ET.SubElement(tag_datfile_archive, "file").text = filename
 
                 # Author tag in XML
                 ET.SubElement(tag_datfile, "author").text = "ChadMaster (archive.org)"
+                ET.SubElement(tag_datfile_archive, "author").text = "ChadMaster (archive.org)"
 
                 # Comment XML tag
                 ET.SubElement(tag_datfile, "comment").text = "_"
+                ET.SubElement(tag_datfile_archive, "comment").text = "_"
 
                 # Get the DAT file
                 print(f"DAT filename: {df}")
@@ -76,12 +87,14 @@ def update_XML():
 
     # store clrmamepro XML file
     xmldata = ET.tostring(tag_clrmamepro).decode()
-
     with open(XML_FILENAME, "w", encoding="utf-8") as xmlfile:
         xmlfile.write(xmldata)
+        
+    xmldata_archive = ET.tostring(tag_clrmamepro_archive).decode()
+    with open(XML_FILENAME_archive, "w", encoding="utf-8") as xmlfile:
+        xmlfile.write(xmldata_archive)
 
     print("Finished")
-
 
 try:
     update_XML()

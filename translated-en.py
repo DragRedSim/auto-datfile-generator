@@ -51,7 +51,7 @@ def update_XML():
                 temp_name = re.search(regex["name"], df).group(1)
                 # trim the - from the end (if exists)
                 ET.SubElement(tag_datfile, "name").text = df[:-4]
-                ET.SubElement(tag_datfile, "description").text = temp_name + " - English Translations"
+                ET.SubElement(tag_datfile, "description").text = df[:-4]
 
                 # URL tag in XML
                 ET.SubElement(tag_datfile, "url").text = XML_URL

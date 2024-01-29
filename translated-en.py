@@ -12,7 +12,7 @@ XML_URL       = "https://github.com/dragredsim/auto-datfile-generator/releases/l
 
 regex = {
     #select anything after a directory separator that has "[T-En] Collection"
-    "name"      : r'([^/\\]*?) \[T-En\] Collection',
+    "name"      : r'([^/\\]*? \[T-En\] Collection)',
 }
 
 def _find_dats():
@@ -44,7 +44,7 @@ def update_XML():
                 tag_datfile = ET.SubElement(tag_clrmamepro, "datfile")
                 
                 # XML version
-                dat_date = datetime.datetime.utcfromtimestamp(dat.mtime).strftime("%Y-%m-%d %H:%M")
+                dat_date = datetime.datetime.utcfromtimestamp(dat.mtime).strftime("%d-%m-%Y")
                 ET.SubElement(tag_datfile, "version").text = dat_date
 
                 # XML name & description
@@ -71,7 +71,7 @@ def update_XML():
                 print(f"DAT filename: {df}")
                 # add datfile to DB zip file
                 zip_object.writestr(df, zf.read(df))
-        print()
+        print(flush=True)
         os.remove(filepath)
 
     # store clrmamepro XML file

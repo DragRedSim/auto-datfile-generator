@@ -21,10 +21,12 @@ regex = {
 
 def _find_dats():
     download_page = requests.get(URL_DOWNLOADS, timeout=30)
-    download_page.raise_for_status()
-
-    dat_files = re.findall(regex["datfile"], download_page.text)
-    return dat_files
+    if (download_page.status_code != 200):
+        download_page.raise_for_status()
+    else:
+        print("Collected Redump DATs")
+        dat_files = re.findall(regex["datfile"], download_page.text)
+        return dat_files
 
 
 def update_XML():
@@ -85,7 +87,7 @@ def update_XML():
             # add datfile to DB zip file
             datfile = response.text
             zip_object.writestr(datfile_name, datfile)
-        print()
+        print(flush=True)
         sleep(5)
 
     # store clrmamepro XML file

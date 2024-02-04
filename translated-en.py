@@ -1,7 +1,7 @@
 import os, re
 import xml.etree.ElementTree as ET
 import zipfile
-import datetime
+from time import gmtime, strftime
 from internetarchive import get_item, get_files
 
 # Config
@@ -26,6 +26,8 @@ def _find_dats():
 
 def update_XML():
     dat_list = _find_dats()
+    
+    pack_gen_date = strftime("%Y-%m-%d", gmtime())
 
     # zip file to store all DAT files
     zip_object = zipfile.ZipFile("translated-en.zip", "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9)
@@ -75,8 +77,8 @@ def update_XML():
                 ET.SubElement(tag_datfile_archive, "author").text = "ChadMaster (archive.org)"
 
                 # Comment XML tag
-                ET.SubElement(tag_datfile, "comment").text = "_"
-                ET.SubElement(tag_datfile_archive, "comment").text = "_"
+                ET.SubElement(tag_datfile, "comment").text = "Downloaded as part of an archive pack, generated " + pack_gen_date
+                ET.SubElement(tag_datfile_archive, "comment").text = "Downloaded from archive.org/download/En-ROMs/"
 
                 # Get the DAT file
                 print(f"DAT filename: {df}")

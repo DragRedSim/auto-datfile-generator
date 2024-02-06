@@ -50,7 +50,7 @@ class dat_handler(metaclass=abc.ABCMeta):
             self.XML_SOURCE_FILENAME = self.XML_FILENAME[:-4]+"-source"+self.XML_FILENAME[-4:]
             self.tag_clrmamepro_source = ET.Element("clrmamepro")
         if (os.getenv("GITHUB_REPOSITORY") != None):
-            self.ZIP_URL = f'https://github.com/{os.getenv("GITHUB_REPOSITORY")}/releases/latest/download/{self.ZIP_FILENAME}'
+            self.ZIP_URL = f'https://github.com/{os.getenv("GITHUB_REPOSITORY")}/releases/{os.getenv("GITHUB_REF_NAME")}/download/{self.ZIP_FILENAME}'
         else:
             self.ZIP_URL = None
     

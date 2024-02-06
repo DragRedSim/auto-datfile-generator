@@ -1,42 +1,41 @@
 import os, re
 import xml.etree.ElementTree as ET
-import zipfile
-from datetime import datetime
+import zipfile, requests, types
+from io import BytesIO
 from time import gmtime, strftime
-from internetarchive import get_item, get_files
+from github import Auth, Github
 from handler import dat_handler, dat_data
 
-class translated_en(dat_handler):
-    AUTHOR              = "ChadMaster (archive.org)"
-    URL_HOME            = "https://archive.org/details/En-ROMs"
-    URL_DOWNLOADS       = "https://archive.org/download/En-ROMs/DATs/"
+class fbneo(dat_handler):
+    AUTHOR              = "FBNeo Team"
+    URL_HOME            = "http://github.com/libretro/FBNeo"
+    URL_DOWNLOADS       = "http://github.com/libretro/FBNeo/dats/"
     CREATE_SOURCE_PKG   = True
-    XML_FILENAME        = "translated-en.xml"
-    ZIP_FILENAME        = "translated-en.zip"
+    XML_FILENAME        = "fbneo.xml"
+    ZIP_FILENAME        = "fbneo.zip"
     regex = {
-        #select anything after a directory separator that has "[T-En] Collection"
-        "dat_name"      : r'([^/\\]*? \[T-En\] Collection)',
-        "platform_name" : r'([^/\\]*?) \[T-En\] Collection',
-        "date"          : r'\((\d{1,2}-\d{1,2}-\d{4})\)'
+        "platform_name" : r'XML, ([^/\\]*?)(?: Games)? only\)',
     }
-    
+
     def _find_dats(self) -> list:
         print("Starting to find dats")
-        dat_files = [f for f in get_files("En-ROMs", glob_pattern="DATs/*")]
+        github_conn = Github() #anonymous access
+        r = github_conn.get_repo("libretro/FBNeo")
+        dat_files = [f for f in r.get_contents("dats") if f.type == 'file']
         print(f"Found {len(dat_files)} files.")
         return dat_files
 
     def handle_file(self, dat):
         # section for this dat in the XML file
         tag_datfile = ET.SubElement(self.tag_clrmamepro, "datfile")
-        
+
         # XML version
         ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d %H:%M")
 
         # XML name & description
         # trim the - from the end (if exists)
-        ET.SubElement(tag_datfile, "name").text = re.search(self.regex["dat_name"], dat.name).group(1)
-        ET.SubElement(tag_datfile, "description").text = re.search(self.regex["platform_name"], dat.name).group(1) + " - English Translations"
+        ET.SubElement(tag_datfile, "name").text = dat.name[:-4]
+        ET.SubElement(tag_datfile, "description").text = "FinalBurn Neo - " + re.search(self.regex["platform_name"], dat.name).group(1)
 
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL
@@ -52,7 +51,7 @@ class translated_en(dat_handler):
 
         # Get the DAT file
         print(f"DAT filename: {dat.name}")
-        
+
         if (self.CREATE_SOURCE_PKG): 
             tag_datfile_source = ET.SubElement(self.tag_clrmamepro_source, "datfile")
             ET.SubElement(tag_datfile_source, "version").text = tag_datfile.find("version").text
@@ -62,35 +61,36 @@ class translated_en(dat_handler):
             ET.SubElement(tag_datfile_source, "file").text = tag_datfile.find("file").text
             ET.SubElement(tag_datfile_source, "author").text = tag_datfile.find("author").text
             ET.SubElement(tag_datfile_source, "comment").text = f"Downloaded from {self.URL_DOWNLOADS}"
-        
+            
         return None
-                        
+
     def update_XML(self):
         dat_list = self._find_dats()
 
         for dat in dat_list:
             print(f"Downloading {dat}")
 
-            dat.download()
+            response = requests.get(dat.download_url)
             filepath = os.path.abspath(dat.name)
             
-            dat_obj = dat_data(name=dat.name, date=datetime.fromtimestamp(dat.mtime), url=dat.url)
+            dat_obj = dat_data(name=dat.name, date=dat.last_modified_datetime, url=dat.download_url)
             
-            if (filepath.endswith(".zip")):
-                with zipfile.ZipFile(filepath, 'r') as zf:
-                    #get a list of all filenames in the zip file, filter to only ones ending in '.dat'
-                    dat_filename = list(filter(lambda f: f.endswith('.dat'), zf.namelist()))
-                    for df in dat_filename:
-                        dat_obj.name = df
-                        self.zip_object.writestr(df, zf.read(df))
-                        self.handle_file(dat_obj)
+            if dat.download_url.endswith(".zip"):
+                # extract datfile from zip to store in the DB zip
+                zipdata = BytesIO()
+                zipdata.write(response.content)
+                archive = zipfile.ZipFile(zipdata)
+                datfile_names_in_zip = [f for f in archive.namelist() if f.endswith("dat")]
+                for f in datfile_names_in_zip:
+                    self.zip_object.writestr(f, archive.read(f))
+                    self.handle_file(dat_obj)
             else:
-                self.zip_object.write(filepath, dat.filename)
+                # add datfile to DB zip file
+                self.zip_object.writestr(dat.name, response.text)
+                #dat_obj.content = response.text
                 self.handle_file(dat_obj)
-                    
-                    
+                
             print(flush=True)
-            os.remove(filepath)
 
         # store clrmamepro XML file
         xmldata = ET.tostring(self.tag_clrmamepro).decode()
@@ -105,7 +105,7 @@ class translated_en(dat_handler):
         print("Finished")
 
 try:
-    t_en_packer = translated_en()
-    t_en_packer.update_XML()
+    fbneo_packer = fbneo()
+    fbneo_packer.update_XML()
 except KeyboardInterrupt:
     pass

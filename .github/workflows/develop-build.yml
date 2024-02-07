@@ -61,7 +61,7 @@ jobs:
           commit: develop
           name: bleeding-edge
           makeLatest: false
-          tag: bleeding-edge
+          tag: develop
           token: ${{ secrets.GITHUB_TOKEN }}
           body: "Automatically released by github actions. These feeds may have errors and their status is in no way guaranteed."
           prerelease: true

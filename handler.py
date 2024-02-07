@@ -56,7 +56,7 @@ class dat_handler(metaclass=abc.ABCMeta):
         self.pack_gen_date      = strftime("%Y-%m-%d", gmtime())
         
         if (os.getenv("GITHUB_REPOSITORY") != None): #if we are running as part of a Github workflow, produce the URL using the account which is running the workflow
-            self.ZIP_URL        = f'https://github.com/{os.getenv("GITHUB_REPOSITORY")}/releases/{os.getenv("GITHUB_REF_NAME")}/download/{self.ZIP_FILENAME}'
+            self.ZIP_URL        = f'https://github.com/{os.getenv("GITHUB_REPOSITORY")}/releases/download/{os.getenv("GITHUB_REF_NAME")}/{self.ZIP_FILENAME}'
         else:
             self.ZIP_URL        = None
             

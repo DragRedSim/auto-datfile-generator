@@ -115,7 +115,7 @@ class redump(dat_handler):
                 self.zip_object.writestr(datfile_name, response.text)
                 self.handle_file(dat_obj)
             print(flush=True)
-            sleep(2)
+            sleep(1)
 
         # store clrmamepro XML file
         xmldata = ET.tostring(self.tag_clrmamepro).decode()

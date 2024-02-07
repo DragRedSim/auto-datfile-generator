@@ -62,10 +62,9 @@ jobs:
         with:
           allowUpdates: true
           artifacts: "*.xml,*.zip"
-          commit: develop
-          name: bleeding-edge
+          name: Beta scripts (not for production use)
           makeLatest: false
-          tag: develop
+          tag: nightly-scripts
           token: ${{ secrets.GITHUB_TOKEN }}
           body: "Automatically released by github actions. These feeds may have errors and their status is in no way guaranteed."
           prerelease: true

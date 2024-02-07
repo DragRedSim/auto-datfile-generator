@@ -49,7 +49,7 @@ class redump(dat_handler):
         # XML name & description
         print(f"DAT filename: {dat.shortname}")
         ET.SubElement(tag_datfile, "name").text = dat.name
-        ET.SubElement(tag_datfile, "description").text = dat.shortname
+        ET.SubElement(tag_datfile, "description").text = dat.shortname[:-4]
 
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL

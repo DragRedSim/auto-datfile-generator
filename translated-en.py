@@ -31,7 +31,7 @@ class translated_en(dat_handler):
         tag_datfile = ET.SubElement(self.tag_clrmamepro, "datfile")
         
         # XML version
-        ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d %H:%M")
+        ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d")
 
         # XML name & description
         # trim the - from the end (if exists)
@@ -74,7 +74,8 @@ class translated_en(dat_handler):
             dat.download()
             filepath = os.path.abspath(dat.name)
             
-            dat_obj = dat_data(name=dat.name, date=datetime.fromtimestamp(dat.mtime), url=dat.url)
+            #dat_obj = dat_data(name=dat.name, date=datetime.fromtimestamp(dat.mtime), url=dat.url)
+            dat_obj = dat_data(name=dat.name, date=datetime.strptime(re.search(self.regex["date"], dat.name), "%d-%m-%Y"), url=dat.url)
             
             if (filepath.endswith(".zip")):
                 with zipfile.ZipFile(filepath, 'r') as zf:
@@ -87,7 +88,6 @@ class translated_en(dat_handler):
             else:
                 self.zip_object.write(filepath, dat.filename)
                 self.handle_file(dat_obj)
-                    
                     
             print(flush=True)
             os.remove(filepath)

@@ -75,7 +75,7 @@ class translated_en(dat_handler):
             filepath = os.path.abspath(dat.name)
             
             #dat_obj = dat_data(name=dat.name, date=datetime.fromtimestamp(dat.mtime), url=dat.url)
-            dat_obj = dat_data(name=dat.name, date=datetime.strptime(re.search(self.regex["date"], dat.name), "%d-%m-%Y"), url=dat.url)
+            dat_obj = dat_data(name=dat.name, date=datetime.strptime(re.search(self.regex["date"], dat.name).group(), "(%d-%m-%Y)"), url=dat.url)
             
             if (filepath.endswith(".zip")):
                 with zipfile.ZipFile(filepath, 'r') as zf:

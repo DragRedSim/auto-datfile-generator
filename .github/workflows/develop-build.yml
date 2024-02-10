@@ -2,8 +2,8 @@ name: Develop-build
 
 on:
   push:
-    tags:
-      nightly-scripts
+    branches:
+      - 'develop'
   workflow_dispatch:
 
 jobs:

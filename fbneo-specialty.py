@@ -88,6 +88,8 @@ class fbneo_specialty(dat_handler):
             dat_name.text = f"FBN - Arcade Subset - {plat[0]}"
             dat_desc = header.find("description")
             dat_desc.text = f"FinalBurn Neo - Arcade Games - {plat[0]} - Sourcefile: \"{plat[1]}\""
+            dat_version = header.find("version")
+            dat_version.text = dat.last_modified_datetime.strftime("%Y-%m-%d %H:%M")
             
             dat_obj = dat_data(name=dat_name.text, date=dat.last_modified_datetime, url=None)
             ET.indent(arcade_dat)

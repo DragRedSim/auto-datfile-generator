@@ -1,10 +1,11 @@
 name: Develop-build
+env:
+  tag: dev-scripts
 
 on:
   push:
     branches:
       - 'develop'
-  workflow_dispatch:
 
 jobs:
   build:
@@ -46,15 +47,15 @@ jobs:
         if: ${{ ! cancelled() }}
         run: pipenv run python3 fbneo-specialty.py
 
-        # HTGD disabled for now
-        #- name: Download dats and generate profile.xml for HTGD
-        #  if: ${{ ! cancelled() }}
-        #  run: pipenv run python3 smdb.py
-        
-        # dats.site disabled for now
-        #- name: Download dats and generate profile.xml for dats.site
-        #  if: ${{ ! cancelled() }}
-        #  run: pipenv run python3 dats-site.py
+      # HTGD disabled for now
+      #- name: Download dats and generate profile.xml for HTGD
+      #  if: ${{ ! cancelled() }}
+      #  run: pipenv run python3 smdb.py
+      
+      # dats.site disabled for now
+      #- name: Download dats and generate profile.xml for dats.site
+      #  if: ${{ ! cancelled() }}
+      #  run: pipenv run python3 dats-site.py
 
       - name: Create release
         if: ${{ ! cancelled() }}
@@ -64,7 +65,7 @@ jobs:
           artifacts: "*.xml,*.zip"
           name: Beta scripts (not for production use)
           makeLatest: false
-          tag: ${{ github.ref_name }}
+          tag: ${{ env.tag }}
           token: ${{ secrets.GITHUB_TOKEN }}
           body: "Automatically released by github actions. These feeds may have errors and their status is in no way guaranteed."
           prerelease: true

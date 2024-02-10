@@ -3,7 +3,7 @@ name: Develop-build
 on:
   push:
     tags:
-      "nightly-scripts"
+      nightly-scripts
   workflow_dispatch:
 
 jobs:

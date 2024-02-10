@@ -2,8 +2,8 @@ name: Develop-build
 
 on:
   push:
-    branches:
-      - 'develop'
+    tags:
+      "nightly-scripts"
   workflow_dispatch:
 
 jobs:
@@ -64,7 +64,7 @@ jobs:
           artifacts: "*.xml,*.zip"
           name: Beta scripts (not for production use)
           makeLatest: false
-          tag: nightly-scripts
+          tag: ${{ github.ref_name }}
           token: ${{ secrets.GITHUB_TOKEN }}
           body: "Automatically released by github actions. These feeds may have errors and their status is in no way guaranteed."
           prerelease: true

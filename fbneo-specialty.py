@@ -93,7 +93,9 @@ class fbneo_specialty(dat_handler):
             ET.indent(arcade_dat)
             
             # add datfile to DB zip file
-            self.zip_object.writestr(dat_obj.name+".dat", ET.tostring(arcade_dat).decode())
+            self.zip_object.writestr(dat_obj.name+".dat", 
+                                     '<?xml version="1.0"?>\n<!DOCTYPE datafile PUBLIC "-//FinalBurn Neo//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">\n\n'
+                                     +ET.tostring(arcade_dat).decode())
             #dat_obj.content = response.text
             self.handle_file(dat_obj)
                 

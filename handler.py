@@ -11,7 +11,7 @@ class dat_data():
     filename: str #name as it is in the DAT file. Must match to provide updatability.
     date    : datetime
     url     : str #download path
-    title   : str | None = None
+    title   : str = None
     
 class dat_handler(metaclass=abc.ABCMeta):
     @property

@@ -46,10 +46,14 @@ jobs:
       - name: Download dats and generate profile.xml for FinalBurn Neo
         if: ${{ ! cancelled() }}
         run: pipenv run python3 fbneo.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Download dats and generate profile.xml for FinalBurn Neo specialty
         if: ${{ ! cancelled() }}
         run: pipenv run python3 fbneo-specialty.py
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # HTGD disabled for now
       #- name: Download dats and generate profile.xml for HTGD

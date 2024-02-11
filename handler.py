@@ -5,6 +5,7 @@ from time import gmtime, strftime
 from datetime import datetime
 from dataclasses import dataclass
 import zipfile
+from typing import Optional
 
 @dataclass
 class dat_data():
@@ -15,7 +16,6 @@ class dat_data():
     url     : Optional[str] = None #download path
     desc    : Optional[str] = None
 
-    
 class dat_handler(metaclass=abc.ABCMeta):
     @property
     @abstractmethod

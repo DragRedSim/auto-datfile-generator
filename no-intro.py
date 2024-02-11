@@ -1,5 +1,4 @@
-import os
-import re
+import os, re
 import xml.etree.ElementTree as ET
 import zipfile
 from time import sleep
@@ -39,9 +38,11 @@ for key, value in no_intro_type.items():
 
     # select "DOWNLOAD"
     driver.find_element(by="xpath", value="/html/body/div/header/nav/ul/li[3]/a").click()
+    sleep(2)
 
     # select "daily"
     driver.find_element(by="xpath", value="/html/body/div/section/article/table[1]/tbody/tr/td/a[5]").click()
+    sleep(2)
 
     #set the type of dat file
     if key == "standard" :
@@ -49,6 +50,7 @@ for key, value in no_intro_type.items():
     if key == "parent-clone" :
         driver.find_element(by="xpath", value="//input[@name='dat_type' and @value='xml']").click()
     print(f"Set dat type to {key} ...")
+    sleep(2)
 
     # select "Request"
     driver.find_element(by="name", value="daily_day").click()
@@ -159,7 +161,7 @@ for key, value in no_intro_type.items():
         print(tempName)
 
         # URL tag in XML
-        ET.SubElement(tag_datfile, "url").text = f"https://github.com/hugo19941994/auto-datfile-generator/releases/latest/download/{archive_name}"
+        ET.SubElement(tag_datfile, "url").text = f'https://github.com/{os.getenv("GITHUB_REPOSITORY")}/releases/download/{os.getenv("tag", os.getenv("GITHUB_REF_NAME"))}/{archive_name}'
 
         # File tag in XML
         fileName = dat

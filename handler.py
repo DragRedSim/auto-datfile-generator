@@ -10,8 +10,8 @@ from typing import Optional
 @dataclass
 class dat_data():
     filename: str #name as it is in the DAT file. Must match to provide updatability.
-    title   : Optional[str] = None #used for creating the description
     date    : datetime
+    title   : Optional[str] = None #used for creating the description
     version : Optional[str] = None #note in description if version number is not in date format
     url     : Optional[str] = None #download path
     desc    : Optional[str] = None

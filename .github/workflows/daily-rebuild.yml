@@ -39,16 +39,24 @@ jobs:
       - name: Download dats and generate profile.xml for Translated-En set from Archive.org
         if: ${{ ! cancelled() }}
         run: pipenv run python3 translated-en.py
-
-        # HTGD disabled for now
-        #- name: Download dats and generate profile.xml for HTGD
-        #  if: ${{ ! cancelled() }}
-        #  run: pipenv run python3 smdb.py
         
-        # dats.site disabled for now
-        #- name: Download dats and generate profile.xml for dats.site
-        #  if: ${{ ! cancelled() }}
-        #  run: pipenv run python3 dats-site.py
+      - name: Download dats and generate profile.xml for FinalBurn Neo
+        if: ${{ ! cancelled() }}
+        run: pipenv run python3 fbneo.py
+      
+      - name: Download dats and generate profile.xml for FinalBurn Neo specialty
+        if: ${{ ! cancelled() }}
+        run: pipenv run python3 fbneo-specialty.py
+
+      # HTGD disabled for now
+      #- name: Download dats and generate profile.xml for HTGD
+      #  if: ${{ ! cancelled() }}
+      #  run: pipenv run python3 smdb.py
+      
+      # dats.site disabled for now
+      #- name: Download dats and generate profile.xml for dats.site
+      #  if: ${{ ! cancelled() }}
+      #  run: pipenv run python3 dats-site.py
 
       - name: Create release
         if: ${{ ! cancelled() }}

@@ -5,6 +5,8 @@
 WWW profiles to use in clrmamepro for the standard No-Intro and Redump sets.
 Refreshes once every 24h automatically.
 
+Note that URL sources marked with a ⬇️ have alternate feeds available, which will download the DAT files directly from their hosts, instead of from a compiled ZIP archive hosted on this repository. They may be more up-to-date by up to 24 hours, but no guarantees are offered in regards to their compatibility.
+
 ## URLs
 
 ### No-Intro
@@ -15,17 +17,23 @@ Refreshes once every 24h automatically.
 
 `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/no-intro_parent-clone.xml`
 
-### Redump
+### Redump ⬇️
 
 `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/redump.xml`
 
-### En-ROMs (from Archive.org)
+Source feed: `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/redump-source.xml`
+
+### En-ROMs (from Archive.org) ⬇️
 
 `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/translated-en.xml`
 
-### FinalBurn Neo
+Source feed: `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/translated-en-source.xml`
+
+### FinalBurn Neo ⬇️
 
 `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/fbneo.xml`
+
+Source feed: `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/fbneo-source.xml`
 
 ### FinalBurn Neo - Specialty
 

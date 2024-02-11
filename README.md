@@ -23,6 +23,16 @@ Refreshes once every 24h automatically.
 
 `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/translated-en.xml`
 
+### FinalBurn Neo
+
+`https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/fbneo.xml`
+
+### FinalBurn Neo - Specialty
+
+`https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/fbneo-specialty.xml`
+
+This is a feed created on-the-fly by extracting parts of the full FBNeo Arcade DAT, in order to produce a few system-specific DATs. Currently this offers DATs for the individual CPS arcade systems produced by Capcom, as some emulator frontends allow these to be their own categories. This will allow you to DAT just those systems out.
+
 <!--- currently disabled
 
 ### Hardware Target Game Database

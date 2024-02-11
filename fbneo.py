@@ -30,12 +30,12 @@ class fbneo(dat_handler):
         tag_datfile = ET.SubElement(self.tag_clrmamepro, "datfile")
 
         # XML version
-        ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d %H:%M")
+        ET.SubElement(tag_datfile, "version").text = dat.version
 
         # XML name & description
         # trim the - from the end (if exists)
         ET.SubElement(tag_datfile, "name").text = dat.title
-        ET.SubElement(tag_datfile, "description").text = "FinalBurn Neo - " + re.search(self.regex["platform_name"], dat.filename).group(1)
+        ET.SubElement(tag_datfile, "description").text = f'FinalBurn Neo - {re.search(self.regex["platform_name"], dat.filename).group(1)} - updated {dat.date.strftime("%Y-%m-%d %H:%M")}'
 
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL
@@ -81,13 +81,13 @@ class fbneo(dat_handler):
                     dat_filenames = [f for f in archive.namelist() if f.endswith("dat")]
                     for df in dat_filenames:
                         self.zip_object.writestr(df, archive.read(df))
-                        dat_obj = dat_data(filename=df, title=ET.fromstring(zf.read(df)).find("header").find("name").text, date=dat.last_modified_datetime, url=dat.download_url)
+                        dat_obj = dat_data(filename=df, title=ET.fromstring(zf.read(df)).find("header").find("name").text, version=ET.fromstring(zf.read(df)).find("header").find("version").text, date=dat.last_modified_datetime, url=dat.download_url)
                         self.handle_file(dat_obj)
             else:
                 # add datfile to DB zip file
                 self.zip_object.writestr(dat.name, response.text)
                 #dat_obj.content = response.text
-                dat_obj = dat_data(filename=dat.name, title=ET.fromstring(response.text).find("header").find("name").text, date=dat.last_modified_datetime, url=dat.download_url)
+                dat_obj = dat_data(filename=dat.name, title=ET.fromstring(response.text).find("header").find("name").text, version=ET.fromstring(response.text).find("header").find("version").text, date=dat.last_modified_datetime, url=dat.download_url)
                 self.handle_file(dat_obj)
                 
             print(flush=True)

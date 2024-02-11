@@ -8,6 +8,9 @@ on:
     - cron:  '0 12 * * *'
   workflow_dispatch:
 
+env:
+  tag: latest
+  
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -67,6 +70,6 @@ jobs:
           commit: master
           name: Daily_Rebuild
           makeLatest: true
-          tag: Daily_Rebuild
+          tag: ${{ env.tag }}
           token: ${{ secrets.GITHUB_TOKEN }}
           body: "Automatically released by github actions"

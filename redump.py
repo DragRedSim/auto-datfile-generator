@@ -47,15 +47,15 @@ class redump(dat_handler):
         ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d %H:%M")
 
         # XML name & description
-        print(f"DAT filename: {dat.shortname}")
-        ET.SubElement(tag_datfile, "name").text = dat.name
-        ET.SubElement(tag_datfile, "description").text = dat.shortname[:-4]
+        print(f"DAT filename: {dat.filename}")
+        ET.SubElement(tag_datfile, "name").text = dat.filename
+        ET.SubElement(tag_datfile, "description").text = dat.filename[:-4]
 
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL
 
         # File tag in XML
-        ET.SubElement(tag_datfile, "file").text = dat.shortname or dat.name
+        ET.SubElement(tag_datfile, "file").text = dat.filename
 
         # Author tag in XML
         ET.SubElement(tag_datfile, "author").text = self.AUTHOR
@@ -66,7 +66,7 @@ class redump(dat_handler):
         if (self.CREATE_SOURCE_PKG): 
             tag_datfile_source = ET.SubElement(self.tag_clrmamepro_source, "datfile")
             ET.SubElement(tag_datfile_source, "version").text = tag_datfile.find("version").text
-            ET.SubElement(tag_datfile_source, "name").text = dat.name
+            ET.SubElement(tag_datfile_source, "name").text = dat.filename
             ET.SubElement(tag_datfile_source, "description").text = tag_datfile.find("description").text + f" - Direct Download from {self.URL_DOWNLOADS}"
             ET.SubElement(tag_datfile_source, "url").text = dat.url
             ET.SubElement(tag_datfile_source, "file").text = tag_datfile.find("file").text
@@ -84,14 +84,11 @@ class redump(dat_handler):
             response = requests.get(dat, timeout=30)
             content_header = response.headers["Content-Disposition"]
             
-            # Get the DAT file
-            datfile_name = ''.join(re.findall(self.regex["trim_filename"], content_header)[0])
-            
             try:
                 version_date = datetime.strptime(re.findall(self.regex["date"], content_header)[0], "%Y-%m-%d %H-%M-%S")
             except:
                 version_date = datetime.strptime(re.findall(self.regex["date"], content_header)[0], "%Y-%m-%d")
-            dat_obj = dat_data(name=datfile_name, date=version_date, url=dat)
+            
             # XML name & description
             temp_name = re.findall(self.regex["trim_filename"], content_header)[0][0]
             # trim the - from the end (if exists)
@@ -99,30 +96,32 @@ class redump(dat_handler):
                 temp_name = temp_name[:-2]
             elif temp_name.endswith("BIOS"):
                 temp_name = temp_name + " Images"
-            dat_obj.shortname = temp_name+".dat"
             if response.headers["Content-Type"] == "application/zip":
                 # extract datfile from zip to store in the DB zip
                 zipdata = BytesIO()
                 zipdata.write(response.content)
-                archive = zipfile.ZipFile(zipdata)
-                datfile_names_in_zip = [f for f in archive.namelist() if f.endswith("dat")]
-                for f in datfile_names_in_zip:
-                    dat_obj.name = f[:-4]
-                    self.zip_object.writestr(dat_obj.shortname, archive.read(f))
-                    self.handle_file(dat_obj)
+                with zipfile.ZipFile(zipdata) as zf:
+                    dat_filenames = [f for f in zf.namelist() if f.endswith("dat")]
+                    for df in dat_filenames:
+                        dat_obj = dat_data(filename=df, title=ET.fromstring(zf.read(df)).find("header").find("name").text, date=version_date, url=dat)
+                        self.zip_object.writestr(df, zf.read(df))
+                        self.handle_file(dat_obj)
             else:
                 # add datfile to DB zip file
-                self.zip_object.writestr(datfile_name, response.text)
+                dat_obj = dat_data(filename=re.findall(self.regex["filename"], content_header)[0], title=temp_name, date=version_date, url=dat)
+                self.zip_object.writestr(dat_obj.filename, response.text)
                 self.handle_file(dat_obj)
             print(flush=True)
             sleep(1)
 
         # store clrmamepro XML file
+        ET.indent(self.tag_clrmamepro)
         xmldata = ET.tostring(self.tag_clrmamepro).decode()
         with open(self.XML_FILENAME, "w", encoding="utf-8") as xmlfile:
             xmlfile.write(xmldata)
             
         if (self.CREATE_SOURCE_PKG):
+            ET.indent(self.tag_clrmamepro_source)
             xmldata_archive = ET.tostring(self.tag_clrmamepro_source).decode()
             with open(self.XML_SOURCE_FILENAME, "w", encoding="utf-8") as xmlfile:
                 xmlfile.write(xmldata_archive)

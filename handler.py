@@ -8,9 +8,10 @@ import zipfile
 
 @dataclass
 class dat_data():
-    name    : str #name as it is in the DAT file. Must match to provide updatability.
+    filename: str #name as it is in the DAT file. Must match to provide updatability.
     date    : datetime
     url     : str #download path
+    title   : str | None = None
     
 class dat_handler(metaclass=abc.ABCMeta):
     @property

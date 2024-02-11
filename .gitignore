@@ -6,3 +6,4 @@
 EverDrive-Packs-Lists-Database/
 geckodriver.log
 .vscode/
+__pycache__/

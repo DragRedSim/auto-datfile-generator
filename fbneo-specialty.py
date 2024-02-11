@@ -44,14 +44,14 @@ class fbneo_specialty(dat_handler):
 
         # XML name & description
         # trim the - from the end (if exists)
-        ET.SubElement(tag_datfile, "name").text = dat.name
-        ET.SubElement(tag_datfile, "description").text = f"FinalBurn Neo - {dat.name[22:]} - Arcade Extraction"
+        ET.SubElement(tag_datfile, "name").text = dat.title
+        ET.SubElement(tag_datfile, "description").text = f"FinalBurn Neo - {dat.desc[22:]} - Arcade Extraction"
 
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL
 
         # File tag in XML
-        ET.SubElement(tag_datfile, "file").text = f"{dat.name}.dat"
+        ET.SubElement(tag_datfile, "file").text = dat.filename
 
         # Author tag in XML
         ET.SubElement(tag_datfile, "author").text = self.AUTHOR
@@ -60,7 +60,7 @@ class fbneo_specialty(dat_handler):
         ET.SubElement(tag_datfile, "comment").text = "Downloaded as part of an archive pack, generated " + self.pack_gen_date
 
         # Get the DAT file
-        print(f"DAT filename: {dat.name}")
+        print(f"DAT filename: {dat.filename}")
             
         return None
 
@@ -91,11 +91,11 @@ class fbneo_specialty(dat_handler):
             dat_version = header.find("version")
             dat_version.text = dat.last_modified_datetime.strftime("%Y-%m-%d %H:%M")
             
-            dat_obj = dat_data(name=dat_name.text, date=dat.last_modified_datetime, url=None)
+            dat_obj = dat_data(filename=f'{dat_name.text}.dat', title=dat_name.text, date=dat.last_modified_datetime, url=None, desc=dat_desc.text)
             ET.indent(arcade_dat)
             
             # add datfile to DB zip file
-            self.zip_object.writestr(dat_obj.name+".dat", 
+            self.zip_object.writestr(dat_obj.filename, 
                                      '<?xml version="1.0"?>\n<!DOCTYPE datafile PUBLIC "-//FinalBurn Neo//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">\n\n'
                                      +ET.tostring(arcade_dat).decode())
             #dat_obj.content = response.text

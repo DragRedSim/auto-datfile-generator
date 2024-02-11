@@ -19,7 +19,7 @@ class fbneo(dat_handler):
 
     def _find_dats(self) -> list:
         print("Starting to find dats")
-        a = Auth(os.getenv("GITHUB_TOKEN"))
+        a = Auth.Token(os.getenv("GITHUB_TOKEN"))
         github_conn = Github(auth=a)
         r = github_conn.get_repo("libretro/FBNeo")
         dat_files = [f for f in r.get_contents("dats") if f.type == 'file']

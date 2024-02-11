@@ -34,14 +34,14 @@ class fbneo(dat_handler):
 
         # XML name & description
         # trim the - from the end (if exists)
-        ET.SubElement(tag_datfile, "name").text = dat.name[:-4]
-        ET.SubElement(tag_datfile, "description").text = "FinalBurn Neo - " + re.search(self.regex["platform_name"], dat.name).group(1)
+        ET.SubElement(tag_datfile, "name").text = dat.title
+        ET.SubElement(tag_datfile, "description").text = "FinalBurn Neo - " + re.search(self.regex["platform_name"], dat.filename).group(1)
 
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL
 
         # File tag in XML
-        ET.SubElement(tag_datfile, "file").text = dat.name
+        ET.SubElement(tag_datfile, "file").text = dat.filename
 
         # Author tag in XML
         ET.SubElement(tag_datfile, "author").text = self.AUTHOR
@@ -50,7 +50,7 @@ class fbneo(dat_handler):
         ET.SubElement(tag_datfile, "comment").text = "Downloaded as part of an archive pack, generated " + self.pack_gen_date
 
         # Get the DAT file
-        print(f"DAT filename: {dat.name}")
+        print(f"DAT filename: {dat.filename}")
 
         if (self.CREATE_SOURCE_PKG): 
             tag_datfile_source = ET.SubElement(self.tag_clrmamepro_source, "datfile")
@@ -73,31 +73,33 @@ class fbneo(dat_handler):
             response = requests.get(dat.download_url)
             filepath = os.path.abspath(dat.name)
             
-            dat_obj = dat_data(name=dat.name, date=dat.last_modified_datetime, url=dat.download_url)
-            
             if dat.download_url.endswith(".zip"):
                 # extract datfile from zip to store in the DB zip
                 zipdata = BytesIO()
                 zipdata.write(response.content)
-                archive = zipfile.ZipFile(zipdata)
-                datfile_names_in_zip = [f for f in archive.namelist() if f.endswith("dat")]
-                for f in datfile_names_in_zip:
-                    self.zip_object.writestr(f, archive.read(f))
-                    self.handle_file(dat_obj)
+                with zipfile.ZipFile(zipdata) as zf:
+                    dat_filenames = [f for f in archive.namelist() if f.endswith("dat")]
+                    for df in dat_filenames:
+                        self.zip_object.writestr(df, archive.read(df))
+                        dat_obj = dat_data(filename=df, title=ET.fromstring(zf.read(df)).find("header").find("name").text, date=dat.last_modified_datetime, url=dat.download_url)
+                        self.handle_file(dat_obj)
             else:
                 # add datfile to DB zip file
                 self.zip_object.writestr(dat.name, response.text)
                 #dat_obj.content = response.text
+                dat_obj = dat_data(filename=dat.name, title=ET.fromstring(response.text).find("header").find("name").text, date=dat.last_modified_datetime, url=dat.download_url)
                 self.handle_file(dat_obj)
                 
             print(flush=True)
 
         # store clrmamepro XML file
+        ET.indent(self.tag_clrmamepro)
         xmldata = ET.tostring(self.tag_clrmamepro).decode()
         with open(self.XML_FILENAME, "w", encoding="utf-8") as xmlfile:
             xmlfile.write(xmldata)
             
         if (self.CREATE_SOURCE_PKG):
+            ET.indent(self.tag_clrmamepro_source)
             xmldata_archive = ET.tostring(self.tag_clrmamepro_source).decode()
             with open(self.XML_SOURCE_FILENAME, "w", encoding="utf-8") as xmlfile:
                 xmlfile.write(xmldata_archive)

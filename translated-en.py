@@ -35,14 +35,14 @@ class translated_en(dat_handler):
 
         # XML name & description
         # trim the - from the end (if exists)
-        ET.SubElement(tag_datfile, "name").text = re.search(self.regex["dat_name"], dat.name).group(1)
-        ET.SubElement(tag_datfile, "description").text = re.search(self.regex["platform_name"], dat.name).group(1) + " - English Translations"
+        ET.SubElement(tag_datfile, "name").text = dat.title
+        ET.SubElement(tag_datfile, "description").text = re.search(self.regex["platform_name"], dat.filename).group(1) + " - English Translations"
 
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL
 
         # File tag in XML
-        ET.SubElement(tag_datfile, "file").text = dat.name
+        ET.SubElement(tag_datfile, "file").text = dat.filename
 
         # Author tag in XML
         ET.SubElement(tag_datfile, "author").text = self.AUTHOR
@@ -51,7 +51,7 @@ class translated_en(dat_handler):
         ET.SubElement(tag_datfile, "comment").text = "Downloaded as part of an archive pack, generated " + self.pack_gen_date
 
         # Get the DAT file
-        print(f"DAT filename: {dat.name}")
+        print(f"DAT filename: {dat.filename}")
         
         if (self.CREATE_SOURCE_PKG): 
             tag_datfile_source = ET.SubElement(self.tag_clrmamepro_source, "datfile")
@@ -74,30 +74,31 @@ class translated_en(dat_handler):
             dat.download()
             filepath = os.path.abspath(dat.name)
             
-            #dat_obj = dat_data(name=dat.name, date=datetime.fromtimestamp(dat.mtime), url=dat.url)
-            dat_obj = dat_data(name=dat.name, date=datetime.strptime(re.search(self.regex["date"], dat.name).group(), "(%d-%m-%Y)"), url=dat.url)
-            
             if (filepath.endswith(".zip")):
                 with zipfile.ZipFile(filepath, 'r') as zf:
                     #get a list of all filenames in the zip file, filter to only ones ending in '.dat'
-                    dat_filename = list(filter(lambda f: f.endswith('.dat'), zf.namelist()))
-                    for df in dat_filename:
-                        dat_obj.name = df
+                    dat_filenames = list(filter(lambda f: f.endswith('.dat'), zf.namelist()))
+                    for df in dat_filenames:
                         self.zip_object.writestr(df, zf.read(df))
+                        dat_obj = dat_data(filename=df, title=ET.fromstring(zf.read(df)).find("header").find("name").text, date=datetime.strptime(re.search(self.regex["date"], dat.name).group(), "(%d-%m-%Y)"), url=dat.url)
                         self.handle_file(dat_obj)
             else:
                 self.zip_object.write(filepath, dat.filename)
+                with open(filepath, "r") as df:
+                    dat_obj = dat_data(filename=dat.filename, title=ET.fromstring(df.read()).find("header").find("name").text, date=datetime.strptime(re.search(self.regex["date"], dat.filename).group(), "(%d-%m-%Y)"), url=dat.url)
                 self.handle_file(dat_obj)
                     
             print(flush=True)
             os.remove(filepath)
 
         # store clrmamepro XML file
+        ET.indent(self.tag_clrmamepro)
         xmldata = ET.tostring(self.tag_clrmamepro).decode()
         with open(self.XML_FILENAME, "w", encoding="utf-8") as xmlfile:
             xmlfile.write(xmldata)
             
         if (self.CREATE_SOURCE_PKG):
+            ET.indent(self.tag_clrmamepro_source)
             xmldata_archive = ET.tostring(self.tag_clrmamepro_source).decode()
             with open(self.XML_SOURCE_FILENAME, "w", encoding="utf-8") as xmlfile:
                 xmlfile.write(xmldata_archive)

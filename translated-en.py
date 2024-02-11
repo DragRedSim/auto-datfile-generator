@@ -36,7 +36,7 @@ class translated_en(dat_handler):
         # XML name & description
         # trim the - from the end (if exists)
         ET.SubElement(tag_datfile, "name").text = dat.title
-        ET.SubElement(tag_datfile, "description").text = re.search(self.regex["platform_name"], dat.filename).group(1) + " - English Translations"
+        ET.SubElement(tag_datfile, "description").text = f'{re.search(self.regex["platform_name"], dat.filename).group(1)} - English Translations (updated {dat.date.strftime("%Y-%m-%d")})'
 
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL

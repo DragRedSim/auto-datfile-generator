@@ -45,7 +45,7 @@ class fbneo_specialty(dat_handler):
         # XML name & description
         # trim the - from the end (if exists)
         ET.SubElement(tag_datfile, "name").text = dat.title
-        ET.SubElement(tag_datfile, "description").text = f"FinalBurn Neo - {dat.desc[22:]} - Arcade Extraction"
+        ET.SubElement(tag_datfile, "description").text = f"FinalBurn Neo - {dat.desc[31:]} - Arcade Extraction"
 
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL

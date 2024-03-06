@@ -66,6 +66,7 @@ class dat_handler(metaclass=abc.ABCMeta):
             self.ZIP_URL        = None
             
         self.zip_object         = zipfile.ZipFile(self.ZIP_FILENAME, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9)
+        atexit.register(self.zip_object.close)
     
     @abc.abstractmethod    
     def handle_file(self, dat_file):
@@ -84,7 +85,6 @@ class dat_handler(metaclass=abc.ABCMeta):
                 if (os.path.exists(g)):
                     os.remove(g)
                     
-    @atexit.register
     def _close_zip(self):
         self.zip_object.close()
     

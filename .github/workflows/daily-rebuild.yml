@@ -32,8 +32,9 @@ jobs:
       - name: Setup pipenv environment
         run: pipenv install --deploy
         
-      - name: Update retool clone lists
-        run: python .\retool\retool.py --update
+      # TODO - implement automatic parsing using Retool
+      #- name: Update retool clone lists
+      #  run: python .\retool\retool.py --update
 
       - name: Download dats and generate profile.xml for Redump
         if: ${{ ! cancelled() }}

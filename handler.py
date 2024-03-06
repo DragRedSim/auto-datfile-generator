@@ -6,6 +6,7 @@ from datetime import datetime
 from dataclasses import dataclass
 import zipfile
 from typing import Optional
+import atexit
 
 @dataclass
 class dat_data():
@@ -82,3 +83,20 @@ class dat_handler(metaclass=abc.ABCMeta):
                 g = os.path.abspath(f)
                 if (os.path.exists(g)):
                     os.remove(g)
+                    
+    @atexit.register
+    def _close_zip(self):
+        self.zip_object.close()
+    
+    def create_XML_entry(self, datfile, version, name, description, url, file, author, comment):
+        datfile_element = ET.SubElement(datfile, "datfile")
+        ET.SubElement(datfile_element, "version").text = version
+        ET.SubElement(datfile_element, "name").text = name
+        ET.SubElement(datfile_element, "description").description
+        ET.SubElement(datfile_element, "url").text = url
+        ET.SubElement(datfile_element, "file").text = file
+        ET.SubElement(datfile_element, "author").text = author
+        ET.SubElement(datfile_element, "comment").text = comment
+        
+class retool_interface():
+    pass

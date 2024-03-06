@@ -5,6 +5,7 @@ from datetime import datetime
 from io import BytesIO
 from time import gmtime, strftime, sleep
 from handler import dat_handler, dat_data
+import subprocess
 
 class redump(dat_handler):
     AUTHOR              = "Redump.org"
@@ -41,37 +42,27 @@ class redump(dat_handler):
 
     def handle_file(self, dat):
         # section for this dat in the XML file
-        tag_datfile = ET.SubElement(self.tag_clrmamepro, "datfile")
-        
-        # XML version
-        ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d %H-%M-%S")
-
-        # XML name & description
-        print(f"DAT filename: {dat.filename}")
-        ET.SubElement(tag_datfile, "name").text = dat.title
-        ET.SubElement(tag_datfile, "description").text = dat.filename[:-4]
-        # URL tag in XML
-        ET.SubElement(tag_datfile, "url").text = self.ZIP_URL
-
-        # File tag in XML
-        ET.SubElement(tag_datfile, "file").text = dat.filename
-
-        # Author tag in XML
-        ET.SubElement(tag_datfile, "author").text = self.AUTHOR
-
-        # Command XML tag
-        ET.SubElement(tag_datfile, "comment").text = "Downloaded as part of an archive pack, generated " + self.pack_gen_date
+        version = dat.date.strftime("%Y-%m-%d %H-%M-%S")
+        description = dat.filename[:-4]
+        create_XML_entry(datfile=self.tag_clrmamepro, 
+                        version=version,
+                        name=dat.title,
+                        description=description,
+                        url=self.ZIP_URL,
+                        file=dat.filename,
+                        author=self.AUTHOR,
+                        comment="Downloaded as part of an archive pack, generated " + self.pack_gen_date)
         
         if (self.CREATE_SOURCE_PKG): 
-            tag_datfile_source = ET.SubElement(self.tag_clrmamepro_source, "datfile")
-            ET.SubElement(tag_datfile_source, "version").text = tag_datfile.find("version").text
-            ET.SubElement(tag_datfile_source, "name").text = dat.filename
-            ET.SubElement(tag_datfile_source, "description").text = tag_datfile.find("description").text + f" - Direct Download from {self.URL_DOWNLOADS}"
-            ET.SubElement(tag_datfile_source, "url").text = dat.url
-            ET.SubElement(tag_datfile_source, "file").text = tag_datfile.find("file").text
-            ET.SubElement(tag_datfile_source, "author").text = tag_datfile.find("author").text
-            ET.SubElement(tag_datfile_source, "comment").text = f"Downloaded from {self.URL_DOWNLOADS}"
-        
+            create_XML_entry(datfile=self.tag_clrmamepro_source, 
+                             version=version,
+                             name=dat.title,
+                             description=f"{description} - Direct Download from {self.URL_DOWNLOADS}",
+                             url=dat.url,
+                             file=dat.filename,
+                             author=self.AUTHOR,
+                             comment=f"Downloaded from {self.URL_DOWNLOADS}")
+
         return None
         
     def update_XML(self):
@@ -105,6 +96,13 @@ class redump(dat_handler):
                         dat_obj = dat_data(filename=df, title=ET.fromstring(zf.read(df)).find("header").find("name").text, date=version_date, url=dat)
                         self.zip_object.writestr(df, zf.read(df))
                         self.handle_file(dat_obj)
+                        with open(df, "wb") as retool_dat_file:
+                            retool_dat_file.write(zf.read(df))
+                        retool = subprocess.check_output(['pipenv', 'run', 'python', './retool/retool.py', df]).decode()
+                        os.unlink(df)
+                        redump_zip.writestr(f'{ET.fromstring(retool).find("header").find("name").text}.dat', retool)
+                        
+                        print("Added Retool")
             else:
                 # add datfile to DB zip file
                 dat_obj = dat_data(filename=re.findall(self.regex["filename"], content_header)[0], title=temp_name, date=version_date, url=dat)
@@ -128,7 +126,9 @@ class redump(dat_handler):
         print("Finished")
 
 try:
-    redump_packer = redump()
-    redump_packer.update_XML()
+    with zipfile.ZipFile("redump-retool.zip", "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as retool_zip:
+        tag_clrmamepro_retool = ET.Element("clrmamepro")
+        redump_packer = redump()
+        redump_packer.update_XML()
 except KeyboardInterrupt:
     pass

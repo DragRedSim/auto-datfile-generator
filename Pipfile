@@ -17,5 +17,8 @@ internetarchive = "*"
 # fbneo.py
 pygithub = "*"
 
+# translated-en.py
+internetarchive = "*"
+
 [requires]
 python_version = "3"

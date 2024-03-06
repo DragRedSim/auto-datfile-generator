@@ -44,13 +44,12 @@ class redump(dat_handler):
         tag_datfile = ET.SubElement(self.tag_clrmamepro, "datfile")
         
         # XML version
-        ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d %H:%M")
+        ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d %H-%M-%S")
 
         # XML name & description
         print(f"DAT filename: {dat.filename}")
         ET.SubElement(tag_datfile, "name").text = dat.title
         ET.SubElement(tag_datfile, "description").text = dat.filename[:-4]
-
         # URL tag in XML
         ET.SubElement(tag_datfile, "url").text = self.ZIP_URL
 

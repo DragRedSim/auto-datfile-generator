@@ -31,7 +31,7 @@ class translated_en(dat_handler):
         tag_datfile = ET.SubElement(self.tag_clrmamepro, "datfile")
         
         # XML version
-        ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d")
+        ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%d-%m-%Y")
 
         # XML name & description
         # trim the - from the end (if exists)

@@ -79,6 +79,7 @@ class translated_en(dat_handler):
                     #get a list of all filenames in the zip file, filter to only ones ending in '.dat'
                     dat_filenames = list(filter(lambda f: f.endswith('.dat'), zf.namelist()))
                     for df in dat_filenames:
+                        #TODO: implement version update to change date to a sortable format in the packed XML files
                         self.zip_object.writestr(df, zf.read(df))
                         dat_obj = dat_data(filename=df, title=ET.fromstring(zf.read(df)).find("header").find("name").text, date=datetime.strptime(re.search(self.regex["date"], dat.name).group(), "(%d-%m-%Y)"), url=dat.url)
                         self.handle_file(dat_obj)

@@ -44,7 +44,7 @@ class redump(dat_handler):
         # section for this dat in the XML file
         version = dat.date.strftime("%Y-%m-%d %H-%M-%S")
         description = dat.filename[:-4]
-        create_XML_entry(datfile=self.tag_clrmamepro, 
+        self.create_XML_entry(datfile=self.tag_clrmamepro, 
                         version=version,
                         name=dat.title,
                         description=description,
@@ -54,7 +54,7 @@ class redump(dat_handler):
                         comment="Downloaded as part of an archive pack, generated " + self.pack_gen_date)
         
         if (self.CREATE_SOURCE_PKG): 
-            create_XML_entry(datfile=self.tag_clrmamepro_source, 
+            self.create_XML_entry(datfile=self.tag_clrmamepro_source, 
                              version=version,
                              name=dat.title,
                              description=f"{description} - Direct Download from {self.URL_DOWNLOADS}",
@@ -96,13 +96,14 @@ class redump(dat_handler):
                         dat_obj = dat_data(filename=df, title=ET.fromstring(zf.read(df)).find("header").find("name").text, date=version_date, url=dat)
                         self.zip_object.writestr(df, zf.read(df))
                         self.handle_file(dat_obj)
-                        with open(df, "wb") as retool_dat_file:
-                            retool_dat_file.write(zf.read(df))
-                        retool = subprocess.check_output(['pipenv', 'run', 'python', './retool/retool.py', df]).decode()
-                        os.unlink(df)
-                        redump_zip.writestr(f'{ET.fromstring(retool).find("header").find("name").text}.dat', retool)
-                        
-                        print("Added Retool")
+                        #TODO: implement Retool
+                        #with open(df, "wb") as retool_dat_file:
+                        #    retool_dat_file.write(zf.read(df))
+                        #retool = subprocess.check_output(['pipenv', 'run', 'python', './retool/retool.py', df]).decode()
+                        #os.unlink(df)
+                        #redump_zip.writestr(f'{ET.fromstring(retool).find("header").find("name").text}.dat', retool)
+                        #
+                        #print("Added Retool")
             else:
                 # add datfile to DB zip file
                 dat_obj = dat_data(filename=re.findall(self.regex["filename"], content_header)[0], title=temp_name, date=version_date, url=dat)

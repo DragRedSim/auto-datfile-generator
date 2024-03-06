@@ -92,7 +92,7 @@ class dat_handler(metaclass=abc.ABCMeta):
         datfile_element = ET.SubElement(datfile, "datfile")
         ET.SubElement(datfile_element, "version").text = version
         ET.SubElement(datfile_element, "name").text = name
-        ET.SubElement(datfile_element, "description").description
+        ET.SubElement(datfile_element, "description").text = description
         ET.SubElement(datfile_element, "url").text = url
         ET.SubElement(datfile_element, "file").text = file
         ET.SubElement(datfile_element, "author").text = author

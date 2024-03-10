@@ -5,7 +5,7 @@
 WWW profiles to use in clrmamepro for the standard No-Intro and Redump sets.
 Refreshes once every 24h automatically.
 
-Note that URL sources marked with a ⬇️ have alternate feeds available, which will download the DAT files directly from their hosts, instead of from a compiled ZIP archive hosted on this repository. They may be more up-to-date by up to 24 hours, but no guarantees are offered in regards to their compatibility.
+Note that URL sources marked with a ⬇️ have alternate feeds available, which will download the DAT files directly from their hosts, instead of from a compiled ZIP archive hosted on this repository. They may be more up-to-date by up to 24 hours, but no guarantees are offered in regards to their compatibility or availability.
 
 ## URLs
 
@@ -28,6 +28,8 @@ Source feed: `https://github.com/dragredsim/auto-datfile-generator/releases/late
 `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/translated-en.xml`
 
 Source feed: `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/translated-en-source.xml`
+
+NOTE: due to how the versions are stored in the DAT files provided from this source, updated DAT files may show up in the CLRMamePro profiler as being "old" versions. This is because the version in the DAT is stored in a DD-MM-YYYY format, which is sorted as a pure text string; so an update on the 3rd of March will appear "older" than an update on the 27th February. Only the latest available file is available via the profiler. In the future, a mangled version of the `translated-en.xml` file will be available, which will correct this automatically; because it involves changing the values in the DAT files (which CLRMamePro uses as the comparison basis to determine new/old), it will not be available as a source pack.
 
 ### FinalBurn Neo ⬇️
 

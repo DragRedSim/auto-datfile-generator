@@ -237,8 +237,11 @@ class dat_handler(metaclass=abc.ABCMeta):
                     self._close_zip(self.container_set[xml_id].zip_object)
                     os.remove(os.path.join(os.getcwd(), self.container_set[xml_id].zip_filename))
         
-        if (os.path.isdir("./DATs") and len(os.listdir("./DATS")) == 0):
-            os.rmdir("./DATs") #clean up after ourselves
+        try:
+            if (os.path.isdir("./DATs") and len(os.listdir("./DATs")) == 0):
+                os.rmdir("./DATs") #clean up after ourselves
+        except:
+            pass
         return
     
 class retool_interface():

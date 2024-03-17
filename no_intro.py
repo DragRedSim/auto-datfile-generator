@@ -43,7 +43,7 @@ class no_intro(dat_handler):
             options.set_preference("browser.download.manager.showWhenStarting", True)
             options.set_preference("browser.download.dir", dir_path)
             options.set_preference("browser.helperApps.neverAsk.saveToDisk", "application/zip")
-            #options.add_argument("-headless")
+            options.add_argument("-headless")
             service = webdriver.FirefoxService(log_output = "firefox-webdriver.log" , service_args = ["--log", "debug"])
             driver = webdriver.Firefox(service=service, options=options)
             driver.implicitly_wait(10)

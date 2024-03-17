@@ -3,8 +3,6 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-
 [packages]
 # redump.py, dats-site.py, smdb.py
 requests = "*"
@@ -15,7 +13,10 @@ lxml = "*"
 # translated-en.py
 internetarchive = "*"
 # fbneo.py
-pygithub = "*"
+pygithub = "*"'
+
+#retool
+psutil = "*"
 
 [requires]
 python_version = "3"

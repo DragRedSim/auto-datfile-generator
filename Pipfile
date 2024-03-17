@@ -13,7 +13,7 @@ lxml = "*"
 # translated-en.py
 internetarchive = "*"
 # fbneo.py
-pygithub = "*"'
+pygithub = "*"
 
 #retool
 psutil = "*"

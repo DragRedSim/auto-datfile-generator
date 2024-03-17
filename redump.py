@@ -8,6 +8,7 @@ from handler import dat_handler, dat_descriptor
 
 from clrmamepro_dat_parser import CMP_Dat_Parser
 from handler import retool_interface
+import requests
 
 class redump(dat_handler):
     SOURCE_ID           = "redump"

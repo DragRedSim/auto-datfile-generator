@@ -53,8 +53,8 @@ class container_set():
             self._zip_object = zipfile.ZipFile(self._zip_filename, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9)
             atexit.register(self._close_zip, self.zip_object)
         
-            if (os.getenv("GITHUB_REPOSITORY") != None and container_name != "source"): #if we are running as part of a Github workflow, produce the URL using the account which is running the workflow
-                self._zip_url = f'https://github.com/{os.getenv("GITHUB_REPOSITORY")}/releases/download/{os.getenv("tag", os.getenv("GITHUB_REF_NAME"))}/{self._zip_filename[container_name]}'
+            if (os.getenv("GITHUB_REPOSITORY") != None and xml_id != "source"): #if we are running as part of a Github workflow, produce the URL using the account which is running the workflow
+                self._zip_url = f'https://github.com/{os.getenv("GITHUB_REPOSITORY")}/releases/download/{os.getenv("tag", os.getenv("GITHUB_REF_NAME"))}/{self._zip_filename[xml_id]}'
             else:
                 self._zip_url = None
         else:
@@ -127,9 +127,9 @@ class dat_handler(metaclass=abc.ABCMeta):
         self._pack_gen_date = strftime("%Y-%m-%d", gmtime())
         self.container_set  = dict()
         
-        for container_name, has_zip in self.XML_TYPES_WITH_ZIP.items():
-            self._cleanup_files(container_name)
-            self.container_set[container_name] = container_set(self.SOURCE_ID, container_name, has_zip)
+        for xml_id, has_zip in self.XML_TYPES_WITH_ZIP.items():
+            self._cleanup_files(xml_id)
+            self.container_set[xml_id] = container_set(self.SOURCE_ID, xml_id, has_zip)
         return
     
     def pack_single_dat(self, xml_id: str, dat_tree: ET, dat_data: dat_descriptor, comment: str = ""):
@@ -216,26 +216,26 @@ class dat_handler(metaclass=abc.ABCMeta):
                         author=self.AUTHOR,
                         comment=comment)
     
-    def add_dat_tree_to_zip(self, filename, dat_tree, target_container_name, dtd=None):
+    def add_dat_tree_to_zip(self, filename, dat_tree, target_xml_id, dtd=None):
             if type(dat_tree) == str:
-                self.container_set[target_container_name].zip_object.writestr(filename, dat_tree)
+                self.container_set[target_xml_id].zip_object.writestr(filename, dat_tree)
             else:
                 if dtd != None:
-                    self.container_set[target_container_name].zip_object.writestr(filename, dtd+ET.tostring(dat_tree).decode())
+                    self.container_set[target_xml_id].zip_object.writestr(filename, dtd+ET.tostring(dat_tree).decode())
                 else:
-                    self.container_set[target_container_name].zip_object.writestr(filename, ET.tostring(dat_tree))              
+                    self.container_set[target_xml_id].zip_object.writestr(filename, ET.tostring(dat_tree))              
    
     def export_containers(self):
-        for container_name, has_zip in self.XML_TYPES_WITH_ZIP.items():
-            if len(self.container_set[container_name].xml_root) > 0:
-                ET.indent(self.container_set[container_name].xml_root)
-                xmldata = ET.tostring(self.container_set[container_name].xml_root).decode()
-                with open(self.container_set[container_name].xml_filename, "w", encoding="utf-8") as xmlfile:
+        for xml_id, has_zip in self.XML_TYPES_WITH_ZIP.items():
+            if len(self.container_set[xml_id].xml_root) > 0:
+                ET.indent(self.container_set[xml_id].xml_root)
+                xmldata = ET.tostring(self.container_set[xml_id].xml_root).decode()
+                with open(self.container_set[xml_id].xml_filename, "w", encoding="utf-8") as xmlfile:
                     xmlfile.write(xmldata)
             else:
                 if has_zip:
-                    self._close_zip(self.container_set[container_name].zip_object)
-                    os.remove(os.path.join(os.getcwd(), self.container_set[container_name].zip_filename))
+                    self._close_zip(self.container_set[xml_id].zip_object)
+                    os.remove(os.path.join(os.getcwd(), self.container_set[xml_id].zip_filename))
         
         if (os.path.isdir("./DATs") and len(os.listdir("./DATS")) == 0):
             os.rmdir("./DATs") #clean up after ourselves

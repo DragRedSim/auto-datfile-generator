@@ -1,0 +1,45 @@
+{
+	"House of The Dead 4, The (Japan) (En,Ja)": {
+		"languages": ["En", "Ja"],
+		"localName": "ザ　ハウス　オブ　ザ　デッド　４"
+	},
+	"House of The Dead 4, The (Japan) (En,Ja) (Rev B)": {
+		"languages": ["En", "Ja"],
+		"localName": "ザ　ハウス　オブ　ザ　デッド　４"
+	},
+	"House of The Dead 4, The (Japan) (En,Ja) (Rev C)": {
+		"languages": ["En", "Ja"],
+		"localName": "ザ　ハウス　オブ　ザ　デッド　４"
+	},
+	"Initial D - Arcade Stage 4 (Japan) (Rev A)": {
+		"languages": ["Ja"],
+		"localName": "頭文字Ｄ　－ＡＲＣＡＤＥ　ＳＴＡＧＥ４－"
+	},
+	"Initial D 4 (Japan) (Rev B)": {
+		"languages": []
+	},
+	"Let's Go Jungle (Export)": {
+		"languages": ["En"]
+	},
+	"Rambo (Export)": {
+		"languages": ["En"]
+	},
+	"Sega Network Taisen Mahjong MJ4 Evolution (Japan)": {
+		"languages": ["Ja"],
+		"localName": "セガネットワーク対戦麻雀ＭＪ４　Ｅｖｏｌｕｔｉｏｎ"
+	},
+	"VBIOS Update (Japan) (Rev A)": {
+		"languages": ["Ja"]
+	},
+	"VBIOS Update [For VTF] (Japan) (Rev A)": {
+		"languages": ["Ja"]
+	},
+	"Virtua Tennis 3 (Export)": {
+		"languages": ["En"],
+		"localName": "パワースマッシュ３"
+	},
+	"Virtua Tennis 3 (Japan) (Rev A)": {
+		"languages": [],
+		"localName": "パワースマッシュ３"
+	}
+}

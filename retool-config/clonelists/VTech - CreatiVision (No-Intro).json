@@ -1,0 +1,25 @@
+{
+	"description": {
+		"name": "VTech - CreatiVision (No-Intro)",
+		"lastUpdated": "26 December 2023",
+		"minimumVersion": "2.02"
+	},
+
+	"variants": [
+		{
+			"group": "BASIC",
+			"categories": ["Applications"],
+			"titles": [
+				{"searchTerm": "BASIC"}
+			]
+		},
+		{
+			"group": "Tennis",
+			"titles": [
+				{"searchTerm": "Tennis (Wimbledon)"},
+				{"searchTerm": "Tennis (DSE)", "priority": 2},
+				{"searchTerm": "Tennis (Coca-Cola ~ Sprite)", "priority": 3}
+			]
+		}
+	]
+}

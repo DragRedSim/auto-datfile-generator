@@ -1,0 +1,17 @@
+{
+	"description": {
+		"name": "Bandai - WonderSwan Color (No-Intro)",
+		"lastUpdated": "10 February 2024",
+		"minimumVersion": "2.02"
+	},
+
+	"variants": [
+		{
+			"group": "Flash Masta Firmware",
+			"categories": ["BIOS"],
+			"titles": [
+				{"searchTerm": "Flash Masta Firmware"}
+			]
+		}
+	]
+}

@@ -1,28 +1,32 @@
-import re
+#!/usr/bin/python
+import os, re
 import xml.etree.ElementTree as ET
-import zipfile, requests
+import zipfile
 from datetime import datetime
-from io import BytesIO
-from time import gmtime, strftime, sleep
-from handler import dat_handler, dat_data
-import subprocess
+from time import gmtime, strftime
+from handler import dat_handler, dat_descriptor
+
+from clrmamepro_dat_parser import CMP_Dat_Parser
+from handler import retool_interface
 
 class redump(dat_handler):
+    SOURCE_ID           = "redump"
     AUTHOR              = "Redump.org"
     URL_HOME            = "http://redump.org/"
     URL_DOWNLOADS       = "http://redump.org/downloads/"
-    CREATE_SOURCE_PKG   = True
-    XML_FILENAME        = "redump.xml"
-    ZIP_FILENAME        = "redump.zip"
+    XML_TYPES_WITH_ZIP  = {'': True, 'source': False, 'retool': True}
     regex = {
         "datfile"  : r'<a href="/datfile/(.*?)">',
-        "date"     : r"\) \((.*?)\)\.",
+        "datfilex"  : r'<a href="/datfile/(x.*?)">',
+        "date"     : r'\) \(([\d\- ]*?)\)\.(?:dat|zip)',
         "name"     : r'filename="(.*?) Datfile',
         "filename" : r'filename="(.*?)"',
-        "trim_filename" : r'filename=\"(.*?) Datfile \(\d+\) \([\d\s-]+\)(.{4})\"'
+        "trim_filename" : r'filename=\"(.*?) Datfile \(\d+\) \([\d\s-]+\)(.{4})\"',
+        "filename_from_header": r'filename=\"(.*?\)\.(?:dat|zip))'
     }
+    retool_caller = retool_interface(["--exclude", "aAbcdPu", "-y"])
 
-    def _find_dats(self) -> list:
+    def find_dats(self) -> list:
         for i in range(0, 10):
             try:
                 download_page = requests.get(self.URL_DOWNLOADS, timeout=30)
@@ -39,34 +43,40 @@ class redump(dat_handler):
                 pass
             else:
                 raise ConnectionError
-
-    def handle_file(self, dat):
-        # section for this dat in the XML file
-        version = dat.date.strftime("%Y-%m-%d %H-%M-%S")
-        description = dat.filename[:-4]
-        self.create_XML_entry(datfile=self.tag_clrmamepro, 
-                        version=version,
-                        name=dat.title,
-                        description=description,
-                        url=self.ZIP_URL,
-                        file=dat.filename,
-                        author=self.AUTHOR,
-                        comment="Downloaded as part of an archive pack, generated " + self.pack_gen_date)
         
-        if (self.CREATE_SOURCE_PKG): 
-            self.create_XML_entry(datfile=self.tag_clrmamepro_source, 
-                             version=version,
-                             name=dat.title,
-                             description=f"{description} - Direct Download from {self.URL_DOWNLOADS}",
-                             url=dat.url,
-                             file=dat.filename,
-                             author=self.AUTHOR,
-                             comment=f"Downloaded from {self.URL_DOWNLOADS}")
-
-        return None
+    def pack_xml_dat_to_all(self, filename_in_zip, dat_tree, orig_url=""):
+        dat_data = dat_descriptor(filename=filename_in_zip,
+                                  title=dat_tree.find("header").find("name").text,
+                                  desc=dat_tree.find("header").find("description").text, 
+                                  date=self.dat_date, 
+                                  url=self.container_set[''].zip_url,
+                                  version=dat_tree.find("header").find("version").text
+            )
+        self.pack_single_dat(xml_id="", dat_tree=dat_tree, dat_data=dat_data, comment=f"Downloaded as part of an archive pack, generated {self.pack_gen_date}")
+        if 'source' in self.container_set:
+            dat_data_source = dat_data.copy(url=orig_url, desc=f"{dat_data.desc} - Direct Download from {self.URL_DOWNLOADS}")
+            self.pack_single_dat(xml_id="source", dat_tree=dat_tree, dat_data=dat_data_source, comment=f"Downloaded directly from {self.URL_DOWNLOADS}")
+        if 'retool' in self.container_set:
+            self.retool_caller.retool(self, dat_data)
+        return
+    
+    def pack_clr_dat_to_all(self, filename_in_zip, dat_content, orig_url=""):
+        parser = CMP_Dat_Parser(dat_content)
+        header = parser.get_header()
+        dat_data = dat_descriptor(filename=filename_in_zip,
+                                  title=header['name'],
+                                  date=datetime.strptime(header['version'], "%Y-%m-%d"),
+                                  version=header['version'],
+                                  url=self.container_set[''].zip_url,
+                                  desc=header['description'])
+        self.pack_single_dat('', dat_content, dat_data, comment=f"Downloaded as part of an archive pack, generated {self.pack_gen_date}")
+        if 'source' in self.container_set:
+            dat_data_source = dat_data.copy(url=orig_url, desc=f"{dat_data.desc} - Direct Download from {self.URL_DOWNLOADS}")
+            self.pack_single_dat(xml_id="source", dat_tree=dat_content, dat_data=dat_data_source, comment=f"Downloaded directly from {self.URL_DOWNLOADS}")
+        #Retool cannot process CLR dats, so there is no need to pass them through here
         
-    def update_XML(self):
-        dat_list = self._find_dats()
+    def process_all_dats(self):
+        dat_list = self.find_dats()
 
         for dat in dat_list:
             print(f"Downloading {dat}")
@@ -76,8 +86,11 @@ class redump(dat_handler):
             
             try:
                 version_date = datetime.strptime(re.findall(self.regex["date"], content_header)[0], "%Y-%m-%d %H-%M-%S")
-            except:
-                version_date = datetime.strptime(re.findall(self.regex["date"], content_header)[0], "%Y-%m-%d")
+            except ValueError:
+                try:
+                    version_date = datetime.strptime(re.findall(self.regex["date"], content_header)[0], "%Y-%m-%d")
+                except Exception as e:
+                    raise(e)                  
             
             # XML name & description
             temp_name = re.findall(self.regex["trim_filename"], content_header)[0][0]
@@ -93,43 +106,30 @@ class redump(dat_handler):
                 with zipfile.ZipFile(zipdata) as zf:
                     dat_filenames = [f for f in zf.namelist() if f.endswith("dat")]
                     for df in dat_filenames:
-                        dat_obj = dat_data(filename=df, title=ET.fromstring(zf.read(df)).find("header").find("name").text, date=version_date, url=dat)
-                        self.zip_object.writestr(df, zf.read(df))
-                        self.handle_file(dat_obj)
-                        #TODO: implement Retool
-                        #with open(df, "wb") as retool_dat_file:
-                        #    retool_dat_file.write(zf.read(df))
-                        #retool = subprocess.check_output(['pipenv', 'run', 'python', './retool/retool.py', df]).decode()
-                        #os.unlink(df)
-                        #redump_zip.writestr(f'{ET.fromstring(retool).find("header").find("name").text}.dat', retool)
-                        #
-                        #print("Added Retool")
+                        dat_tree = ET.fromstring(zf.read(df))
+                        self.dat_date = datetime.strftime(version_date, "%Y-%m-%d")
+                        self.pack_xml_dat_to_all(df, dat_tree, dat)
             else:
                 # add datfile to DB zip file
-                dat_obj = dat_data(filename=re.findall(self.regex["filename"], content_header)[0], title=temp_name, date=version_date, url=dat)
-                self.zip_object.writestr(dat_obj.filename, response.text)
-                self.handle_file(dat_obj)
+                dat_content = response.text
+                self.dat_date = datetime.strftime(version_date, "%Y-%m-%d")
+                if dat_content[:12] == "clrmamepro (":
+                    # This is a CLRMamePro dat, not a traditional XML dat.
+                    self.pack_clr_dat_to_all(re.findall(self.regex['filename_from_header'], content_header)[0], dat_content, dat)
+                else:
+                    dat_tree = ET.fromstring(dat_content)
+                    self.pack_xml_dat_to_all(dat.name, dat_tree, dat.url)
             print(flush=True)
             sleep(1)
 
         # store clrmamepro XML file
-        ET.indent(self.tag_clrmamepro)
-        xmldata = ET.tostring(self.tag_clrmamepro).decode()
-        with open(self.XML_FILENAME, "w", encoding="utf-8") as xmlfile:
-            xmlfile.write(xmldata)
-            
-        if (self.CREATE_SOURCE_PKG):
-            ET.indent(self.tag_clrmamepro_source)
-            xmldata_archive = ET.tostring(self.tag_clrmamepro_source).decode()
-            with open(self.XML_SOURCE_FILENAME, "w", encoding="utf-8") as xmlfile:
-                xmlfile.write(xmldata_archive)
+        self.export_containers()
 
         print("Finished")
 
-try:
-    with zipfile.ZipFile("redump-retool.zip", "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as retool_zip:
-        tag_clrmamepro_retool = ET.Element("clrmamepro")
+if __name__ == "__main__":
+    try:
         redump_packer = redump()
-        redump_packer.update_XML()
-except KeyboardInterrupt:
-    pass
+        redump_packer.process_all_dats()
+    except KeyboardInterrupt:
+        pass

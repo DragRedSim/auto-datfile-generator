@@ -1,0 +1,16 @@
+{
+	"Action 1 Glosprogram (Sweden) (Network Version)": {
+		"languages": ["Sv"]
+	},
+	"Intresse-fallenhet-yrkesval (Sweden)": {
+		"languages": ["Sv"]
+	},
+	"Mat halveringstid (Sweden)": {
+		"languages": ["Sv"],
+		"localName": "Mät halveringstid"
+	},
+	"Spara-lana-vinna (Sweden)": {
+		"languages": ["Sv"],
+		"localName": "Spara-låna-vinna"
+	}
+}

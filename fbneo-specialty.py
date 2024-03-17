@@ -1,18 +1,20 @@
 import os, re
 import xml.etree.ElementTree as ET
-import zipfile, requests, types
-from io import BytesIO
+import zipfile
+from datetime import datetime
 from time import gmtime, strftime
+from handler import dat_handler, dat_descriptor
+
 from github import Auth, Github
-from handler import dat_handler, dat_data
+from io import BytesIO
+import requests, types
 
 class fbneo_specialty(dat_handler):
+    SOURCE_ID           = "fbneo-specialty"
     AUTHOR              = "FinalBurn Neo"
     URL_HOME            = "http://github.com/libretro/FBNeo"
     URL_DOWNLOADS       = "http://github.com/libretro/FBNeo/dats/"
-    CREATE_SOURCE_PKG   = False #since we're extracting parts of the Arcade DAT, these cannot be provided as direct links
-    XML_FILENAME        = "fbneo-specialty.xml"
-    ZIP_FILENAME        = "fbneo-specialty.zip"
+    XML_TYPES_WITH_ZIP  = {"": True}
     regex = {
         "platform_name" : r'XML, ([^/\\]*?)(?: Games)? only\)',
         "platform_driver" : r'',
@@ -26,47 +28,32 @@ class fbneo_specialty(dat_handler):
         "CPS3": "cps3/d_cps3.cpp",
     }
 
-    def _find_dats(self) -> list:
+    def find_dats(self) -> list:
         print("Starting to find dats")
-        a = Auth.Token(os.getenv("GITHUB_TOKEN"))
+        if os.getenv("GITHUB_TOKEN"):
+            a = Auth.Token(os.getenv("GITHUB_TOKEN"))
+        else:
+            a = None
         github_conn = Github(auth=a)
         r = github_conn.get_repo("libretro/FBNeo")
         all_dat_files = [f for f in r.get_contents("dats") if f.type == 'file']
         dat_files = list(filter(lambda dat: "arcade" in dat.name.lower(), all_dat_files))
         print(f"Found {len(dat_files)} files matching the search term \'arcade\'.")
         return dat_files
+  
+    def pack_xml_dat_to_all(self, filename_in_zip, dat_tree, orig_url=""):
+        dat_data = dat_descriptor(filename=filename_in_zip,
+                                  title=dat_tree.find("header").find("name").text,
+                                  desc=dat_tree.find("header").find("description").text, 
+                                  date=self.dat_date, 
+                                  url=self.container_set[''].zip_url,
+                                  version=dat_tree.find("header").find("version").text,
+                                  dtd='<?xml version="1.0"?>\n<!DOCTYPE datafile PUBLIC "-//FinalBurn Neo//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">\n\n'
+            )
+        self.pack_single_dat(xml_id="", dat_tree=dat_tree, dat_data=dat_data, comment=f"Downloaded as part of an archive pack, generated {self.pack_gen_date}")
 
-    def handle_file(self, dat):
-        # section for this dat in the XML file
-        tag_datfile = ET.SubElement(self.tag_clrmamepro, "datfile")
-
-        # XML version
-        ET.SubElement(tag_datfile, "version").text = dat.date.strftime("%Y-%m-%d %H:%M")
-
-        # XML name & description
-        # trim the - from the end (if exists)
-        ET.SubElement(tag_datfile, "name").text = dat.title
-        ET.SubElement(tag_datfile, "description").text = f"FinalBurn Neo - {dat.desc[31:]} - Arcade Extraction"
-
-        # URL tag in XML
-        ET.SubElement(tag_datfile, "url").text = self.ZIP_URL
-
-        # File tag in XML
-        ET.SubElement(tag_datfile, "file").text = dat.filename
-
-        # Author tag in XML
-        ET.SubElement(tag_datfile, "author").text = self.AUTHOR
-
-        # Comment XML tag
-        ET.SubElement(tag_datfile, "comment").text = "Downloaded as part of an archive pack, generated " + self.pack_gen_date
-
-        # Get the DAT file
-        print(f"DAT filename: {dat.filename}")
-            
-        return None
-
-    def update_XML(self):
-        dat_list = self._find_dats() #should return a list of one element, the arcade dat
+    def process_all_dats(self):
+        dat_list = self.find_dats() #should return a list of one element, the arcade dat
 
         dat = dat_list[0]
         print(f"Downloading {dat}")
@@ -92,28 +79,27 @@ class fbneo_specialty(dat_handler):
             dat_version = header.find("version")
             dat_version.text = dat.last_modified_datetime.strftime("%Y-%m-%d %H:%M")
             
-            dat_obj = dat_data(filename=f'{dat_name.text}.dat', title=dat_name.text, date=dat.last_modified_datetime, url=None, desc=dat_desc.text)
+            dat_data = dat_descriptor(filename=f'{dat_name.text}.dat', title=dat_name.text, date=dat.last_modified_datetime, url=None, desc=dat_desc.text)
             ET.indent(arcade_dat)
             
-            # add datfile to DB zip file
-            self.zip_object.writestr(dat_obj.filename, 
-                                     '<?xml version="1.0"?>\n<!DOCTYPE datafile PUBLIC "-//FinalBurn Neo//DTD ROM Management Datafile//EN" "http://www.logiqx.com/Dats/datafile.dtd">\n\n'
-                                     +ET.tostring(arcade_dat).decode())
-            #dat_obj.content = response.text
-            self.handle_file(dat_obj)
+            self.dat_date = datetime.strftime(dat.last_modified_datetime, "%Y-%m-%d")
+            self.pack_xml_dat_to_all(dat_name.text, arcade_dat)
                 
             print(flush=True)
 
         # store clrmamepro XML file
-        ET.indent(self.tag_clrmamepro)
-        xmldata = ET.tostring(self.tag_clrmamepro).decode()
-        with open(self.XML_FILENAME, "w", encoding="utf-8") as xmlfile:
-            xmlfile.write(xmldata)
-
+        self.export_containers()
+        
+        if os.path.exists(filepath):
+            try:
+                os.remove(filepath)
+            except PermissionError:
+                pass
         print("Finished")
 
-try:
-    fbneo_specialty_packer = fbneo_specialty()
-    fbneo_specialty_packer.update_XML()
-except KeyboardInterrupt:
-    pass
+if __name__ == "__main__":
+    try:
+        fbneo_specialty_packer = fbneo_specialty()
+        fbneo_specialty_packer.process_all_dats()
+    except KeyboardInterrupt:
+        pass

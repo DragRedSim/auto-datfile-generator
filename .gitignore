@@ -7,7 +7,7 @@ EverDrive-Packs-Lists-Database/
 geckodriver.log
 .vscode/
 __pycache__/
-clonelists/
-config/
 retool/
-metadata/
+firefox-webdriver.log
+standard/
+parent-clone/

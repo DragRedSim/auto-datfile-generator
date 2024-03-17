@@ -37,9 +37,9 @@ jobs:
       - name: Setup pipenv environment
         if: ${{ ! cancelled() }}
         run: |
-          pipenv install --deploy
+          pipenv install
           cd ./retool
-          pipenv install --deploy
+          pipenv install
           cd ..
         
       - name: Update retool clone lists

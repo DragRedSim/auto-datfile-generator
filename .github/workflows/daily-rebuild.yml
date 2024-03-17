@@ -38,10 +38,7 @@ jobs:
         if: ${{ ! cancelled() }}
         run: |
           pipenv install
-          pipenv shell
-          cd ./retool
-          pipenv install
-          cd ..
+          pipenv run pipenv install ./retool
         
       - name: Update retool clone lists
         if: ${{ ! cancelled() }}

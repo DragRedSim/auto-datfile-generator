@@ -44,7 +44,7 @@ jobs:
         run: |
           pwd
           dir
-          dir ../retool
+          dir ..
           pipenv run python ../retool/retool.py --update
 
       - name: Download dats and generate profile.xml for Redump

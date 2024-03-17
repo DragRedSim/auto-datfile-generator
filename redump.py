@@ -27,8 +27,9 @@ class redump(dat_handler):
     retool_caller = retool_interface(["--exclude", "aAbcdPu", "-y"])
 
     def find_dats(self) -> list:
-        for i in range(0, 10):
-            try:
+        failed_reqs = 0
+        try:
+            for i in range(0, 10):
                 download_page = requests.get(self.URL_DOWNLOADS, timeout=30)
                 if (download_page.status_code != 200):
                     download_page.raise_for_status()
@@ -39,9 +40,9 @@ class redump(dat_handler):
                     for f in dat_files:
                         dat_files_fullpath.append(self.URL_HOME + "datfile/" + f)
                     return dat_files_fullpath
-            except:
-                pass
-            else:
+        except:
+            failed_reqs+=1
+            if failed_reqs >= 10:
                 raise ConnectionError
         
     def pack_xml_dat_to_all(self, filename_in_zip, dat_tree, orig_url=""):

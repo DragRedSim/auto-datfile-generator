@@ -39,7 +39,7 @@ jobs:
       - name: Update retool clone lists
         if: ${{ ! cancelled() }}
         working-directory: ./retool-config
-        run: pipenv run ..\retool\retool.py --update
+        run: pipenv run ../retool/retool.py --update
 
       - name: Download dats and generate profile.xml for Redump
         if: ${{ ! cancelled() }}

@@ -54,7 +54,7 @@ class container_set():
             atexit.register(self._close_zip, self.zip_object)
         
             if (os.getenv("GITHUB_REPOSITORY") != None and xml_id != "source"): #if we are running as part of a Github workflow, produce the URL using the account which is running the workflow
-                self._zip_url = f'https://github.com/{os.getenv("GITHUB_REPOSITORY")}/releases/download/{os.getenv("tag", os.getenv("GITHUB_REF_NAME"))}/{self._zip_filename[xml_id]}'
+                self._zip_url = f'https://github.com/{os.getenv("GITHUB_REPOSITORY")}/releases/download/{os.getenv("tag", os.getenv("GITHUB_REF_NAME"))}/{self._zip_filename}'
             else:
                 self._zip_url = None
         else:

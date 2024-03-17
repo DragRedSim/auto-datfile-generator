@@ -38,6 +38,7 @@ jobs:
         if: ${{ ! cancelled() }}
         run: |
           pipenv install
+          pipenv shell
           cd ./retool
           pipenv install
           cd ..

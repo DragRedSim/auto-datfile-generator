@@ -268,8 +268,9 @@ class retool_interface():
                 rename_to = re.sub(self.regex["retool_file"], ")", newFile)
                 os.rename(newFile, rename_to)
                 with open(rename_to, "rb") as retool_dat:
-                    if len(retool_dat.read(20)) > 0:
-                        dat_tree_retool = ET.fromstring(retool_dat.read())
+                    dat_contents_retool = retool_dat.read()
+                    if len(dat_contents_retool) > 0:
+                        dat_tree_retool = ET.fromstring(dat_contents_retool)
                         dat_data_retool = dat_data.copy(filename=os.path.basename(rename_to),
                                                         title=dat_data.title+f" (Retool)",
                                                         desc=dat_data.desc+f" - Retooled",

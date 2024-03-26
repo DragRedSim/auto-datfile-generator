@@ -260,7 +260,8 @@ class retool_interface():
             command = ['pipenv', 'run', 'retool', f"{str(os.fspath(dat_path))}"]
             for x in self.added_args:
                 command.append(x)
-            retool_proc = subprocess.run(command, cwd=os.path.join(dir_path, "retool-config"), timeout=300, stdout=subprocess.DEVNULL)
+            with open(f"{dat_data.title}-retool.dat", "w") as retooled_dat:
+                retool_proc = subprocess.run(command, cwd=os.path.join(dir_path, "retool-config"), timeout=300, stdout=retooled_dat)
             fileExists = len([f for f in os.listdir() if f.startswith(dat_data.title)])
             if fileExists > 0:
                 newFile = [f for f in os.listdir() if f.startswith(dat_data.title)][0]

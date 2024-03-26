@@ -260,7 +260,7 @@ class retool_interface():
             command = ['pipenv', 'run', 'retool', f"{str(os.fspath(dat_path))}"]
             for x in self.added_args:
                 command.append(x)
-            retool_proc = subprocess.run(command, cwd=os.path.join(dir_path, "retool-config"), timeout=300)
+            retool_proc = subprocess.run(command, cwd=os.path.join(dir_path, "retool-config"), timeout=300, stdout=subprocess.DEVNULL)
             fileExists = len([f for f in os.listdir() if f.startswith(dat_data.title)])
             if fileExists > 0:
                 newFile = [f for f in os.listdir() if f.startswith(dat_data.title)][0]
@@ -274,6 +274,9 @@ class retool_interface():
                                                     url=calling_handler.container_set['retool'].zip_url)
                     calling_handler.pack_single_dat(xml_id='retool', dat_tree=dat_tree_retool, dat_data=dat_data_retool, comment=f"Downloaded as part of an archive pack, generated {calling_handler.pack_gen_date}, Retool applied")
                 os.remove(rename_to)
+            else:
+                print("File not created!")
+                raise(FileNotFoundError)
             os.chdir(os.fspath(dir_path))
             print()
         except Exception as e:

@@ -19,7 +19,8 @@ jobs:
       - uses: actions/checkout@v4
         with:
           submodules: recursive
-      - uses: actions/setup-python@v5
+      - id: setup-python
+        uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pipenv'
@@ -84,6 +85,12 @@ jobs:
       #- name: Download dats and generate profile.xml for dats.site
       #  if: ${{ ! cancelled() }}
       #  run: pipenv run python dats-site.py
+      
+      - name: Cache environment for future
+        uses: actions/cache@v3
+        with:
+          path: ~/.local/share/virtualenvs
+          key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-pipenv-${{ hashFiles('Pipfile.lock') }}
 
       - name: Create release
         if: ${{ ! cancelled() }}

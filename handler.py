@@ -268,12 +268,13 @@ class retool_interface():
                 rename_to = re.sub(self.regex["retool_file"], ")", newFile)
                 os.rename(newFile, rename_to)
                 with open(rename_to, "rb") as retool_dat:
-                    dat_tree_retool = ET.fromstring(retool_dat.read())
-                    dat_data_retool = dat_data.copy(filename=os.path.basename(rename_to),
-                                                    title=dat_data.title+f" (Retool)",
-                                                    desc=dat_data.desc+f" - Retooled",
-                                                    url=calling_handler.container_set['retool'].zip_url)
-                    calling_handler.pack_single_dat(xml_id='retool', dat_tree=dat_tree_retool, dat_data=dat_data_retool, comment=f"Downloaded as part of an archive pack, generated {calling_handler.pack_gen_date}, Retool applied")
+                    if len(retool_dat.read(20)) > 0:
+                        dat_tree_retool = ET.fromstring(retool_dat.read())
+                        dat_data_retool = dat_data.copy(filename=os.path.basename(rename_to),
+                                                        title=dat_data.title+f" (Retool)",
+                                                        desc=dat_data.desc+f" - Retooled",
+                                                        url=calling_handler.container_set['retool'].zip_url)
+                        calling_handler.pack_single_dat(xml_id='retool', dat_tree=dat_tree_retool, dat_data=dat_data_retool, comment=f"Downloaded as part of an archive pack, generated {calling_handler.pack_gen_date}, Retool applied")
                 os.remove(rename_to)
             else:
                 print("File not created!")

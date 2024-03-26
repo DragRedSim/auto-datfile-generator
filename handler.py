@@ -234,7 +234,7 @@ class dat_handler(metaclass=abc.ABCMeta):
                     xmlfile.write(xmldata)
             else:
                 if has_zip:
-                    self._close_zip(self.container_set[xml_id].zip_object)
+                    self.container_set[xml_id]._close_zip(self.container_set[xml_id].zip_object)
                     os.remove(os.path.join(os.getcwd(), self.container_set[xml_id].zip_filename))
         
         try:
@@ -256,7 +256,7 @@ class retool_interface():
         try:
             dir_path = os.path.dirname(os.path.realpath(__file__))
             os.chdir(os.path.join(dir_path, "retool-config"))
-            command = ['pipenv', 'run', 'python', '../retool/retool.py', f"{str(os.fspath(calling_handler.datfile))}"]
+            command = ['pipenv', 'run', 'retool', f"{str(os.fspath(calling_handler.datfile))}"]
             for x in self.added_args:
                 command.append(x)
             retool_proc = subprocess.run(command, cwd=os.path.join(dir_path, "retool-config"), timeout=300)

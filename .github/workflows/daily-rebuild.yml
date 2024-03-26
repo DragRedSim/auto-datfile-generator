@@ -37,50 +37,53 @@ jobs:
       - name: Setup pipenv environment
         if: ${{ ! cancelled() }}
         run: |
+          pwd
           pipenv install
         
       - name: Update retool clone lists
         if: ${{ ! cancelled() }}
         working-directory: ./retool-config
-        run: pipenv run retool --update
+        run: |
+          pwd
+          pipenv run retool --update
 
       - name: Download dats and generate profile.xml for Redump
         if: ${{ ! cancelled() }}
-        run: pipenv run python3 redump.py
+        run: pipenv run python redump.py
 
       - name: Download dats and generate profile.xml for No-Intro
         if: ${{ ! cancelled() }}
-        run: pipenv run python3 no_intro.py
+        run: pipenv run python no_intro.py
         
       - name: Download dats and generate profile.xml for No-Intro (Parent-Clone)
         if: ${{ ! cancelled() }}
-        run: pipenv run python3 no_intro_parent_clone.py
+        run: pipenv run python no_intro_parent_clone.py
         
       - name: Download dats and generate profile.xml for Translated-En set from Archive.org
         if: ${{ ! cancelled() }}
-        run: pipenv run python3 translated-en.py
+        run: pipenv run python translated-en.py
         
       - name: Download dats and generate profile.xml for FinalBurn Neo
         if: ${{ ! cancelled() }}
-        run: pipenv run python3 fbneo.py
+        run: pipenv run python fbneo.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       
       - name: Download dats and generate profile.xml for FinalBurn Neo specialty
         if: ${{ ! cancelled() }}
-        run: pipenv run python3 fbneo-specialty.py
+        run: pipenv run python fbneo-specialty.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       # HTGD disabled for now
       #- name: Download dats and generate profile.xml for HTGD
       #  if: ${{ ! cancelled() }}
-      #  run: pipenv run python3 smdb.py
+      #  run: pipenv run python smdb.py
       
       # dats.site disabled for now
       #- name: Download dats and generate profile.xml for dats.site
       #  if: ${{ ! cancelled() }}
-      #  run: pipenv run python3 dats-site.py
+      #  run: pipenv run python dats-site.py
 
       - name: Create release
         if: ${{ ! cancelled() }}

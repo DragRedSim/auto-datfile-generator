@@ -10,3 +10,5 @@ __pycache__/
 firefox-webdriver.log
 standard/
 parent-clone/
+clonelists/
+metadata/

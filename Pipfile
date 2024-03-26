@@ -16,6 +16,7 @@ internetarchive = "*"
 pygithub = "*"
 #retool
 psutil = "*"
+retool = {editable = true, ref = "main", git = "git+https://github.com/unexpectedpanda/retool.git"}
 
 [requires]
 python_version = "3"

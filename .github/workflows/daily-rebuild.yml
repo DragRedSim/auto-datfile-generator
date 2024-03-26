@@ -38,12 +38,11 @@ jobs:
         if: ${{ ! cancelled() }}
         run: |
           pipenv install
-          cd ./retool && pipenv install
         
       - name: Update retool clone lists
         if: ${{ ! cancelled() }}
         working-directory: ./retool-config
-        run: pipenv run python ../retool/retool.py --update
+        run: pipenv run retool --update
 
       - name: Download dats and generate profile.xml for Redump
         if: ${{ ! cancelled() }}

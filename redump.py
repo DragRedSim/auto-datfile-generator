@@ -3,7 +3,7 @@ import os, re
 import xml.etree.ElementTree as ET
 import zipfile
 from datetime import datetime
-from time import gmtime, strftime
+from time import gmtime, strftime, sleep
 from handler import dat_handler, dat_descriptor
 
 from clrmamepro_dat_parser import CMP_Dat_Parser
@@ -30,8 +30,9 @@ class redump(dat_handler):
 
     def find_dats(self) -> list:
         failed_reqs = 0
-        for i in range(0, 10):
+        for i in range(1, 10):
             try:
+                print(f"Trying to download DATs list page from Redump, try {i} of 10")
                 download_page = requests.get(self.URL_DOWNLOADS, timeout=8) #Redump web server sets Keep-Alive timeout to 5, so this is more than enough
                 if (download_page.status_code != 200):
                     download_page.raise_for_status()
@@ -47,7 +48,7 @@ class redump(dat_handler):
                 if failed_reqs >= 10:
                     raise ConnectionError
         
-    def pack_xml_dat_to_all(self, filename_in_zip, dat_tree, orig_url=""):
+    def pack_xml_dat_to_all(self, filename_in_zip, dat_tree, orig_url="", dat_path=""):
         dat_data = dat_descriptor(filename=filename_in_zip,
                                   title=dat_tree.find("header").find("name").text,
                                   desc=dat_tree.find("header").find("description").text, 
@@ -60,7 +61,7 @@ class redump(dat_handler):
             dat_data_source = dat_data.copy(url=orig_url, desc=f"{dat_data.desc} - Direct Download from {self.URL_DOWNLOADS}")
             self.pack_single_dat(xml_id="source", dat_tree=dat_tree, dat_data=dat_data_source, comment=f"Downloaded directly from {self.URL_DOWNLOADS}")
         if 'retool' in self.container_set:
-            self.retool_caller.retool(self, dat_data)
+            self.retool_caller.retool(self, dat_path, dat_data)
         return
     
     def pack_clr_dat_to_all(self, filename_in_zip, dat_content, orig_url=""):
@@ -110,8 +111,13 @@ class redump(dat_handler):
                     dat_filenames = [f for f in zf.namelist() if f.endswith("dat")]
                     for df in dat_filenames:
                         dat_tree = ET.fromstring(zf.read(df))
+                        if 'retool' in self.container_set:
+                            dat_file = zf.extract(df)
                         self.dat_date = datetime.strftime(version_date, "%Y-%m-%d")
-                        self.pack_xml_dat_to_all(df, dat_tree, dat)
+                        self.pack_xml_dat_to_all(df, dat_tree, dat, dat_file or None)
+                        if dat_file:
+                            os.unlink(dat_file)
+                            dat_file = None
             else:
                 # add datfile to DB zip file
                 dat_content = response.text
@@ -121,9 +127,14 @@ class redump(dat_handler):
                     self.pack_clr_dat_to_all(re.findall(self.regex['filename_from_header'], content_header)[0], dat_content, dat)
                 else:
                     dat_tree = ET.fromstring(dat_content)
-                    self.pack_xml_dat_to_all(dat.name, dat_tree, dat.url)
+                    if 'retool' in self.container_set:
+                        with open(f"{dat.name}.dat", 'w') as dat_file:
+                            dat_file.write(dat_content)
+                    self.pack_xml_dat_to_all(dat.name, dat_tree, dat.url, f"{dat.name}.dat" if os.path.exists(f"{dat.name}.dat") else None)
+                    if 'retool' in self.container_set:
+                        os.unlink(f"{dat.name}.dat")
             print(flush=True)
-            sleep(1)
+            #sleep(1)
 
         # store clrmamepro XML file
         self.export_containers()

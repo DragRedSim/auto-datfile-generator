@@ -144,7 +144,7 @@ class no_intro(dat_handler):
                             pass
         return dat_files                    
         
-    def pack_xml_dat_to_all(self, filename_in_zip, dat_tree, orig_url=""):
+    def pack_xml_dat_to_all(self, filename_in_zip, dat_tree, orig_url="", dat_path=""):
         dat_data = dat_descriptor(filename=filename_in_zip,
                                   title=dat_tree.find("header").find("name").text,
                                   desc=dat_tree.find("header").find("description").text, 
@@ -154,7 +154,7 @@ class no_intro(dat_handler):
                                   )
         self.pack_single_dat(xml_id='', dat_tree=dat_tree, dat_data=dat_data, comment=f"Downloaded as part of an archive pack, generated {self.pack_gen_date}")
         if 'retool' in self.container_set:
-            self.retool_caller.retool(self, dat_data)
+            self.retool_caller.retool(self, dat_path, dat_data)
         
     def process_all_dats(self):
         dat_list = self.find_dats()
@@ -176,8 +176,7 @@ class no_intro(dat_handler):
                     raise()
                 else:
                     dat_tree = ET.fromstring(dat_content)
-                    self.datfile = dat #hacky workaround to access the full filename for retool without breaking the interface contract
-                    self.pack_xml_dat_to_all(os.path.basename(dat), dat_tree)
+                    self.pack_xml_dat_to_all(os.path.basename(dat), dat_tree, dat_path=dat)
         
         # store clrmamepro XML file
         self.export_containers()

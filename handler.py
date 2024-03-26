@@ -150,7 +150,7 @@ class dat_handler(metaclass=abc.ABCMeta):
         self.add_dat_to_xml(dat_data, xml_id, comment)
         return
     @abc.abstractmethod    
-    def pack_xml_dat_to_all(self, filename_in_zip: str, dat_tree: ET.ElementTree | str, orig_url: str=""):
+    def pack_xml_dat_to_all(self, filename_in_zip: str, dat_tree: ET.ElementTree | str, orig_url: str="", dat_path: str=""):
         """This method should contain the logic to pack one individual DAT file into each container specified for the source.
         
         :param filename_in_zip: The filename to be used when writing the DAT file into the container ZIP.
@@ -159,6 +159,7 @@ class dat_handler(metaclass=abc.ABCMeta):
         :type dat_tree: ET, str
         :param orig_url: The original download location of the DAT file, used to produce source packages.
         :type orig_url: str
+        :param dat_path: The file path of the DAT file being handled. Only utilised in passing through to Retool, if necessary.
         """
         raise NotImplementedError("Interface violation on pack_xml_dat_to_all()")
     @abc.abstractmethod
@@ -252,11 +253,11 @@ class retool_interface():
     def __init__(self, arguments: list):
         self.added_args = arguments
     
-    def retool(self, calling_handler: dat_handler, dat_data: dat_descriptor):
+    def retool(self, calling_handler: dat_handler, dat_path: str, dat_data: dat_descriptor):
         try:
             dir_path = os.path.dirname(os.path.realpath(__file__))
             os.chdir(os.path.join(dir_path, "retool-config"))
-            command = ['pipenv', 'run', 'retool', f"{str(os.fspath(calling_handler.datfile))}"]
+            command = ['pipenv', 'run', 'retool', f"{str(os.fspath(dat_path))}"]
             for x in self.added_args:
                 command.append(x)
             retool_proc = subprocess.run(command, cwd=os.path.join(dir_path, "retool-config"), timeout=300)

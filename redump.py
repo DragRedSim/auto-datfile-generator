@@ -6,7 +6,6 @@ from datetime import datetime
 from time import gmtime, strftime, sleep
 from handler import dat_handler, dat_descriptor
 
-from clrmamepro_dat_parser import CMP_Dat_Parser
 from handler import retool_interface
 import requests
 from io import BytesIO
@@ -18,8 +17,8 @@ class redump(dat_handler):
     URL_DOWNLOADS       = "http://redump.org/downloads/"
     XML_TYPES_WITH_ZIP  = {'': True, 'source': False, 'retool': True}
     regex = {
-        "datfile"  : r'<a href="/datfile/(.*?)">',
-        "datfilex"  : r'<a href="/datfile/(x.*?)">',
+        "datfile"  : r'<a href=\"/datfile/(.*?)\">',
+        "datfile_bios"  : r'<a href=\"/datfile/(.{0,10}-bios)/?\">BIOS Datfile</a>',
         "date"     : r'\) \(([\d\- ]*?)\)\.(?:dat|zip)',
         "name"     : r'filename="(.*?) Datfile',
         "filename" : r'filename="(.*?)"',
@@ -30,7 +29,7 @@ class redump(dat_handler):
 
     def find_dats(self) -> list:
         failed_reqs = 0
-        for i in range(1, 10):
+        for i in range(1, 10+1):
             try:
                 print(f"Trying to download DATs list page from Redump, try {i} of 10")
                 download_page = requests.get(self.URL_DOWNLOADS, timeout=8) #Redump web server sets Keep-Alive timeout to 5, so this is more than enough
@@ -65,6 +64,7 @@ class redump(dat_handler):
         return
     
     def pack_clr_dat_to_all(self, filename_in_zip, dat_content, orig_url=""):
+        from clrmamepro_dat_parser import CMP_Dat_Parser
         parser = CMP_Dat_Parser(dat_content)
         header = parser.get_header()
         dat_data = dat_descriptor(filename=filename_in_zip,
@@ -81,6 +81,9 @@ class redump(dat_handler):
         
     def process_all_dats(self):
         dat_list = self.find_dats()
+        if type(dat_list) == None:
+            raise(ConnectionError)
+            sys.exit()
 
         for dat in dat_list:
             print(f"Downloading {dat}")

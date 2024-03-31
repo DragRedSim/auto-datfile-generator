@@ -261,7 +261,7 @@ class retool_interface():
             for x in self.added_args:
                 command.append(x)
             with open(f"{dat_data.title}-retool.dat", "w") as retooled_dat:
-                retool_proc = subprocess.run(command, cwd=os.path.join(dir_path, "retool-config"), timeout=300, stdout=retooled_dat)
+                retool_proc = subprocess.run(command, cwd=os.path.join(dir_path, "retool-config"), timeout=600, stdout=retooled_dat)
             fileExists = len([f for f in os.listdir() if f.startswith(dat_data.title)])
             if fileExists > 0:
                 newFile = [f for f in os.listdir() if f.startswith(dat_data.title)][0]

@@ -37,7 +37,8 @@ runs:
             if: ${{ ! cancelled() }}
             shell: bash
             run: |
-                echo "RETOOLPATH=$(pipenv run which retool)" >> $GITHUB_OUTPUT
+                fullpath=$(pipenv run which retool)
+                echo "RETOOLPATH=$(dirname "${fullpath}")" >> $GITHUB_OUTPUT
         -   name: Copy config into Retool path
             if: ${{ ! cancelled() }}
             shell: bash

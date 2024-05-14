@@ -36,6 +36,8 @@ runs:
             working-directory: ./retool-config
             shell: bash
             run: |
+                ls ./config
                 pwd
                 printf 'y\n' | pipenv run retool --update
                 ls ./config
+                ls ./config/systems

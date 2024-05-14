@@ -1,0 +1,17 @@
+name: Release files from this run
+        
+runs:
+    using: composite
+    steps:
+        -   name: Create release
+            if: ${{ ! cancelled() }}
+            uses: ncipollo/release-action@v1
+            with:
+                allowUpdates: true
+                artifacts: "*.xml,*.zip"
+                commit: master
+                name: Daily_Rebuild
+                makeLatest: true
+                tag: ${{ env.tag }}
+                token: ${{ secrets.GITHUB_TOKEN }}
+                body: "Automatically released by github actions"

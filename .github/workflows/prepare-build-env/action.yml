@@ -8,12 +8,12 @@ runs:
             with:
                 python-version: '3.11'
                 cache: 'pipenv'
-            shell: bash
         -   name: Setup base environment
             if: ${{ ! cancelled() }}
             run: |
                 echo "timestamp=$(date +%s)" >> $GITHUB_ENV
                 echo "PIPENV_VERBOSITY=-1" >> $GITHUB_ENV
+                shell: bash
         -   name: Setup cache for retool
             if: ${{ ! cancelled() }}
             id: retool-cache
@@ -21,7 +21,6 @@ runs:
             with: 
                 path: ./retool-config
                 key: ${{ runner.os }}-retool-clonelists
-            shell: bash
         -   name: Install pipenv
             if: ${{ ! cancelled() }}
             run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python

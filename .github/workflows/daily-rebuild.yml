@@ -22,10 +22,7 @@ jobs:
       - name: Display checkout
         run: |
           pwd
-          ls
-          cd ~
-          pwd
-          ls
+          ls -alt
   fbneo:
     runs-on: ubuntu-latest
     needs: checkout

@@ -6,7 +6,6 @@ from datetime import datetime
 from time import gmtime, strftime, sleep
 from utils.handler import dat_handler, dat_descriptor
 
-from utils.handler import retool_interface
 import requests
 from io import BytesIO
 
@@ -15,7 +14,7 @@ class redump(dat_handler):
     AUTHOR              = "Redump.org"
     URL_HOME            = "http://redump.org/"
     URL_DOWNLOADS       = "http://redump.org/downloads/"
-    XML_TYPES_WITH_ZIP  = {'': True, 'source': False, 'retool': True}
+    XML_TYPES_WITH_ZIP  = {'': True, 'source': False}
     regex = {
         "datfile"  : r'<a href=\"/datfile/(.*?)\">',
         "datfile_bios"  : r'<a href=\"/datfile/(.{0,10}-bios)/?\">BIOS Datfile</a>',
@@ -25,7 +24,6 @@ class redump(dat_handler):
         "trim_filename" : r'filename=\"(.*?) Datfile \(\d+\) \([\d\s-]+\)(.{4})\"',
         "filename_from_header": r'filename=\"(.*?\)\.(?:dat|zip))'
     }
-    retool_caller = retool_interface(["--exclude", "aAbcdPu", "-y"])
 
     def find_dats(self) -> list:
         failed_reqs = 0
@@ -59,8 +57,6 @@ class redump(dat_handler):
         if 'source' in self.container_set:
             dat_data_source = dat_data.copy(url=orig_url, desc=f"{dat_data.desc} - Direct Download from {self.URL_DOWNLOADS}")
             self.pack_single_dat(xml_id="source", dat_tree=dat_tree, dat_data=dat_data_source, comment=f"Downloaded directly from {self.URL_DOWNLOADS}")
-        if 'retool' in self.container_set:
-            self.retool_caller.retool(self, dat_path, dat_data)
         return
     
     def pack_clr_dat_to_all(self, filename_in_zip, dat_content, orig_url=""):
@@ -77,7 +73,6 @@ class redump(dat_handler):
         if 'source' in self.container_set:
             dat_data_source = dat_data.copy(url=orig_url, desc=f"{dat_data.desc} - Direct Download from {self.URL_DOWNLOADS}")
             self.pack_single_dat(xml_id="source", dat_tree=dat_content, dat_data=dat_data_source, comment=f"Downloaded directly from {self.URL_DOWNLOADS}")
-        #Retool cannot process CLR dats, so there is no need to pass them through here
         
     def process_all_dats(self):
         dat_list = self.find_dats()
@@ -114,13 +109,8 @@ class redump(dat_handler):
                     dat_filenames = [f for f in zf.namelist() if f.endswith("dat")]
                     for df in dat_filenames:
                         dat_tree = ET.fromstring(zf.read(df))
-                        if 'retool' in self.container_set:
-                            dat_file = zf.extract(df)
                         self.dat_date = datetime.strftime(version_date, "%Y-%m-%d")
                         self.pack_xml_dat_to_all(df, dat_tree, dat, dat_file or None)
-                        if dat_file:
-                            os.unlink(dat_file)
-                            dat_file = None
             else:
                 # add datfile to DB zip file
                 dat_content = response.text
@@ -130,12 +120,7 @@ class redump(dat_handler):
                     self.pack_clr_dat_to_all(re.findall(self.regex['filename_from_header'], content_header)[0], dat_content, dat)
                 else:
                     dat_tree = ET.fromstring(dat_content)
-                    if 'retool' in self.container_set:
-                        with open(f"{dat.name}.dat", 'w') as dat_file:
-                            dat_file.write(dat_content)
                     self.pack_xml_dat_to_all(dat.name, dat_tree, dat.url, f"{dat.name}.dat" if os.path.exists(f"{dat.name}.dat") else None)
-                    if 'retool' in self.container_set:
-                        os.unlink(f"{dat.name}.dat")
             print(flush=True)
             #sleep(1)
 

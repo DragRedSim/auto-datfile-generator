@@ -12,7 +12,6 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import subprocess
-from utils.handler import retool_interface
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 
@@ -21,14 +20,12 @@ class no_intro(dat_handler):
     AUTHOR              = "no-intro.org"
     URL_HOME            = "https://datomatic.no-intro.org/"
     URL_DOWNLOADS       = "https://datomatic.no-intro.org/"
-    XML_TYPES_WITH_ZIP  = {'': True, 'retool': True}
+    XML_TYPES_WITH_ZIP  = {'': True}
     PACK_TYPE           = "standard"
     regex = {
         "date"     : r"\(([0-9]{8}-[0-9]{6})\)",
         "name"     : r"(.*?.)( \([0-9]{8}-[0-9]{6}\).dat)",
-        "retool_file": r"( \d{4}-\d{2}-\d{2} \d{2}-\d{2}-\d{2}\) \(\d+\).*?)\.\w{3}"
     }
-    retool_caller = retool_interface(["--exclude", "aAbcdPu", "-y"])
     
     def download_nointro_zip(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
@@ -153,8 +150,6 @@ class no_intro(dat_handler):
                                   version=dat_tree.find("header").find("version").text
                                   )
         self.pack_single_dat(xml_id='', dat_tree=dat_tree, dat_data=dat_data, comment=f"Downloaded as part of an archive pack, generated {self.pack_gen_date}")
-        if 'retool' in self.container_set:
-            self.retool_caller.retool(self, dat_path, dat_data)
         
     def process_all_dats(self):
         dat_list = self.find_dats()

@@ -14,13 +14,6 @@ runs:
             run: |
                 echo "timestamp=$(date +%s)" >> $GITHUB_ENV
                 echo "PIPENV_VERBOSITY=-1" >> $GITHUB_ENV
-        -   name: Setup cache for retool
-            if: ${{ ! cancelled() }}
-            id: retool-cache
-            uses: actions/cache@v4
-            with: 
-                path: ./retool-config/clonelists
-                key: ${{ runner.os }}-retool-clonelists
         -   name: Install pipenv
             if: ${{ ! cancelled() }}
             shell: bash
@@ -31,25 +24,3 @@ runs:
             run: |
                 pwd
                 pipenv install
-                pipenv run which retool
-        -   name: Get Retool path
-            id: retool-path
-            if: ${{ ! cancelled() }}
-            shell: bash
-            run: |
-                fullpath=$(pipenv run which retool)
-                echo "RETOOLPATH=$(dirname "${fullpath}")" >> $GITHUB_OUTPUT
-        -   name: Copy config into Retool path
-            if: ${{ ! cancelled() }}
-            shell: bash
-            run: |
-                cp -r ./retool-config/. ${{ steps.retool-path.outputs.RETOOLPATH }}
-        -   name: Update retool clone lists
-            if: ${{ ! cancelled() }} && steps.retool-cache.outputs.cache-hit != 'true'
-            shell: bash
-            run: |
-                ls ./config
-                pwd
-                printf 'y\n' | pipenv run retool --update
-                ls ./config
-                ls ./config/systems

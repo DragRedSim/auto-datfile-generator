@@ -3,11 +3,11 @@
 ![Daily Rebuild Status](https://github.com/dragredsim/auto-datfile-generator/actions/workflows/daily-rebuild.yml/badge.svg)
 
 WWW profiles to use in clrmamepro for an assortment of DAT sets.
-Refreshes once every 24h automatically. If a task fails, its files will not be updated until the next run, but they will not be removed either. As such, if changes on the source side break these scripts, they may become out of date.
 
-Retool has been deprecated by its author; as such, I no longer feel comfortable producing 1G1R collections using its clonelist functionality. This is because I intend for this to be a mostly automatic project; one which I do not need to maintain to any great degree. Having unmaintained dependencies goes against this theory into the future. I will shortly remove references in the code to it.
+Currently automatic generation on this repository is disabled, as it is in an incomplete state. No automatic updates will be produced until further notice.
+~~Refreshes once every 24h automatically. If a task fails, its files will not be updated until the next run, but they will not be removed either. As such, if changes on the source side break these scripts, they may become out of date.~~
 
-~~Some feeds (No-Intro, Redump) have Retool variant feeds available. These have been pre-processed to provide a 1G1R collection according to my preferences. If you wish to have your own preferences, fork the repository and edit the appropriate files in `handler.py` and the `retool-config` folder.~~
+Retool has been deprecated by its author; as such, I no longer feel comfortable producing 1G1R collections using its clonelist functionality. This is because I intend for this to be a mostly automatic project; one which I do not need to maintain to any great degree. Having unmaintained dependencies goes against this theory into the future. 
 
 Note that URL sources marked with a ⬇️ have alternate feeds available, which will download the DAT files directly from their hosts, instead of from a compiled ZIP archive hosted on this repository. They may be more up-to-date by up to 24 hours, but no guarantees are offered in regards to their compatibility or availability.
 
@@ -17,8 +17,6 @@ Note that URL sources marked with a ⬇️ have alternate feeds available, which
 
 `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/no-intro.xml`
 
-~~Retool variant: `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/no-intro-retool.xml`~~
-
 ### No-Intro (parent-clone)
 
 `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/no-intro_parent-clone.xml`
@@ -26,8 +24,6 @@ Note that URL sources marked with a ⬇️ have alternate feeds available, which
 ### Redump ⬇️
 
 `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/redump.xml`
-
-~~Retool variant: `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/redump-retool.xml`~~
 
 Source feed: `https://github.com/dragredsim/auto-datfile-generator/releases/latest/download/redump-source.xml`
 

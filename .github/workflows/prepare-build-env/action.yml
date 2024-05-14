@@ -10,10 +10,10 @@ runs:
                 cache: 'pipenv'
         -   name: Setup base environment
             if: ${{ ! cancelled() }}
+            shell: bash
             run: |
                 echo "timestamp=$(date +%s)" >> $GITHUB_ENV
                 echo "PIPENV_VERBOSITY=-1" >> $GITHUB_ENV
-                shell: bash
         -   name: Setup cache for retool
             if: ${{ ! cancelled() }}
             id: retool-cache
@@ -23,18 +23,18 @@ runs:
                 key: ${{ runner.os }}-retool-clonelists
         -   name: Install pipenv
             if: ${{ ! cancelled() }}
-            run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
             shell: bash
+            run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
         -   name: Setup pipenv environment
             if: ${{ ! cancelled() }}
+            shell: bash
             run: |
                 pwd
                 pipenv install
-            shell: bash
         -   name: Update retool clone lists
             if: ${{ ! cancelled() }} && steps.retool-cache.outputs.cache-hit != 'true'
             working-directory: ./retool-config
+            shell: bash
             run: |
                 pwd
                 pipenv run retool --update
-            shell: bash

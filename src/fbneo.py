@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 from datetime import datetime
 from time import gmtime, strftime
-from handler import dat_handler, dat_descriptor
+from utils.handler import dat_handler, dat_descriptor
 
 from github import Auth, Github
 from io import BytesIO

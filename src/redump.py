@@ -4,9 +4,9 @@ import xml.etree.ElementTree as ET
 import zipfile
 from datetime import datetime
 from time import gmtime, strftime, sleep
-from handler import dat_handler, dat_descriptor
+from utils.handler import dat_handler, dat_descriptor
 
-from handler import retool_interface
+from utils.handler import retool_interface
 import requests
 from io import BytesIO
 
@@ -64,7 +64,7 @@ class redump(dat_handler):
         return
     
     def pack_clr_dat_to_all(self, filename_in_zip, dat_content, orig_url=""):
-        from clrmamepro_dat_parser import CMP_Dat_Parser
+        from utils.clrmamepro_dat_parser import CMP_Dat_Parser
         parser = CMP_Dat_Parser(dat_content)
         header = parser.get_header()
         dat_data = dat_descriptor(filename=filename_in_zip,

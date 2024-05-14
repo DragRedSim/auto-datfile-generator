@@ -4,7 +4,7 @@ import xml.etree.ElementTree as ET
 import zipfile
 from datetime import datetime
 from time import gmtime, strftime, sleep
-from handler import dat_handler, dat_descriptor
+from utils.handler import dat_handler, dat_descriptor
 
 from selenium import webdriver
 from selenium.common.exceptions import TimeoutException
@@ -12,7 +12,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.by import By
 import subprocess
-from handler import retool_interface
+from utils.handler import retool_interface
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 

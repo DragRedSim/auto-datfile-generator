@@ -5,7 +5,7 @@
 WWW profiles to use in clrmamepro for an assortment of DAT sets.
 Refreshes once every 24h automatically. If a task fails, its files will not be updated until the next run, but they will not be removed either. As such, if changes on the source side break these scripts, they may become out of date.
 
-Retool has been deprecated by its author; as such, I no longer feel comfortable producing 1G1R collections using its clonelist functionality. I will shortly remove references in the code to it.
+Retool has been deprecated by its author; as such, I no longer feel comfortable producing 1G1R collections using its clonelist functionality. This is because I intend for this to be a mostly automatic project; one which I do not need to maintain to any great degree. Having unmaintained dependencies goes against this theory into the future. I will shortly remove references in the code to it.
 
 ~~Some feeds (No-Intro, Redump) have Retool variant feeds available. These have been pre-processed to provide a 1G1R collection according to my preferences. If you wish to have your own preferences, fork the repository and edit the appropriate files in `handler.py` and the `retool-config` folder.~~
 

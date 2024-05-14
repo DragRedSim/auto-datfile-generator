@@ -15,7 +15,7 @@ jobs:
   fbneo:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/prepare-build-env
+      - uses: ./.github/workflows/prepare-build-env.yml
       - name: Download dats and generate profile.xml for FinalBurn Neo
         if: ${{ ! cancelled() }}
         run: pipenv run python src/fbneo.py
@@ -26,50 +26,50 @@ jobs:
         run: pipenv run python src/fbneo-specialty.py
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - uses: ./.github/workflows/update-release-files
+      - uses: ./.github/workflows/update-release-files.yml
 
   redump:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/prepare-build-env
+      - uses: ./.github/workflows/prepare-build-env.yml
       - name: Download dats and generate profile.xml for Redump
         if: ${{ ! cancelled() }}
         run: pipenv run python src/redump.py
-      - uses: ./.github/workflows/update-release-files
+      - uses: ./.github/workflows/update-release-files.yml
 
   no-intro:
     runs-on: ubuntu-latest
     steps:
-
+      - uses: ./.github/workflows/prepare-build-env.yml
       - name: Download dats and generate profile.xml for No-Intro
         if: ${{ ! cancelled() }}
         run: pipenv run python src/no_intro.py
       - name: Download dats and generate profile.xml for No-Intro (Parent-Clone)
         if: ${{ ! cancelled() }}
         run: pipenv run python src/no_intro_parent_clone.py
-      - uses: ./.github/workflows/update-release-files
+      - uses: ./.github/workflows/update-release-files.yml
     
   translated-en:
     runs-on: ubuntu-latest
     steps:
-      - uses: ./.github/workflows/prepare-build-env
+      - uses: ./.github/workflows/prepare-build-env.yml
       - name: Download dats and generate profile.xml for Translated-En set from Archive.org
         if: ${{ ! cancelled() }}
         run: pipenv run python src/translated-en.py
-      - uses: ./.github/workflows/update-release-files
+      - uses: ./.github/workflows/update-release-files.yml
       
   #htgd:
   #HTGD disabled for now
-  #  - uses: ./.github/workflows/prepare-build-env
+  #  - uses: ./.github/workflows/prepare-build-env.yml
   #  - name: Download dats and generate profile.xml for HTGD
   #    if: ${{ ! cancelled() }}
   #    run: pipenv run python src/smdb.py
-  #  - uses: ./.github/workflows/update-release-files
+  #  - uses: ./.github/workflows/update-release-files.yml
       
   #dats-site:
   #dats.site disabled for now
-  #  - uses: ./.github/workflows/prepare-build-env
+  #  - uses: ./.github/workflows/prepare-build-env.yml
   #  - name: Download dats and generate profile.xml for dats.site
   #    if: ${{ ! cancelled() }}
   #    run: pipenv run python src/dats-site.py
-  #  - uses: ./.github/workflows/update-release-files
+  #  - uses: ./.github/workflows/update-release-files.yml

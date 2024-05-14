@@ -8,6 +8,7 @@ runs:
             with:
                 python-version: '3.11'
                 cache: 'pipenv'
+            shell: bash
         -   name: Setup base environment
             if: ${{ ! cancelled() }}
             run: |
@@ -20,17 +21,21 @@ runs:
             with: 
                 path: ./retool-config
                 key: ${{ runner.os }}-retool-clonelists
+            shell: bash
         -   name: Install pipenv
             if: ${{ ! cancelled() }}
             run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+            shell: bash
         -   name: Setup pipenv environment
             if: ${{ ! cancelled() }}
             run: |
                 pwd
                 pipenv install
+            shell: bash
         -   name: Update retool clone lists
             if: ${{ ! cancelled() }} && steps.retool-cache.outputs.cache-hit != 'true'
             working-directory: ./retool-config
             run: |
                 pwd
                 pipenv run retool --update
+            shell: bash

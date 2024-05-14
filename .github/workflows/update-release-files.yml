@@ -1,0 +1,20 @@
+name: Release files from this run
+on:
+    workflow_call:
+        
+jobs:
+    release:
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Create release
+                if: ${{ ! cancelled() }}
+                uses: ncipollo/release-action@v1
+                with:
+                    allowUpdates: true
+                    artifacts: "*.xml,*.zip"
+                    commit: master
+                    name: Daily_Rebuild
+                    makeLatest: true
+                    tag: ${{ env.tag }}
+                    token: ${{ secrets.GITHUB_TOKEN }}
+                    body: "Automatically released by github actions"

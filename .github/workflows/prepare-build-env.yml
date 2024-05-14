@@ -1,0 +1,36 @@
+name: Prepare build environment
+on:
+    workflow_call:
+        
+jobs:
+    create_env:
+        runs-on: ubuntu-latest
+        steps:
+            -   id: checkout-repo
+                uses: actions/checkout@v4
+                with:
+                    submodules: recursive
+            -   id: setup-python
+                uses: actions/setup-python@v5
+                with:
+                    python-version: '3.11'
+                    cache: 'pipenv'
+            -   name: Setup base environment
+                if: ${{ ! cancelled() }}
+                run: |
+                    echo "timestamp=$(date +%s)" >> $GITHUB_ENV
+                    echo "PIPENV_VERBOSITY=-1" >> $GITHUB_ENV
+            -   name: Install pipenv
+                if: ${{ ! cancelled() }}
+                run: curl https://raw.githubusercontent.com/pypa/pipenv/master/get-pipenv.py | python
+            -   name: Setup pipenv environment
+                if: ${{ ! cancelled() }}
+                run: |
+                    pwd
+                    pipenv install
+            -   name: Update retool clone lists
+                if: ${{ ! cancelled() }}
+                working-directory: ./retool-config
+                run: |
+                    pwd
+                    pipenv run retool --update

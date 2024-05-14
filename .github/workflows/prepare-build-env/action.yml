@@ -19,7 +19,7 @@ runs:
             id: retool-cache
             uses: actions/cache@v4
             with: 
-                path: ./retool-config
+                path: ./retool-config/clonelists
                 key: ${{ runner.os }}-retool-clonelists
         -   name: Install pipenv
             if: ${{ ! cancelled() }}
@@ -37,4 +37,4 @@ runs:
             shell: bash
             run: |
                 pwd
-                pipenv run retool --update
+                pipenv run retool --update < echo 'y'

@@ -31,9 +31,20 @@ runs:
             run: |
                 pwd
                 pipenv install
+                pipenv run which retool
+        -   name: Get Retool path
+            id: retool-path
+            if: ${{ ! cancelled() }}
+            shell: bash
+            run: |
+                echo "RETOOLPATH=$(pipenv run which retool)" >> $GITHUB_OUTPUT
+        -   name: Copy config into Retool path
+            if: ${{ ! cancelled() }}
+            shell: bash
+            run: |
+                cp -r ./retool-config/. ${{ steps.retool-path.outputs.RETOOLPATH }}
         -   name: Update retool clone lists
             if: ${{ ! cancelled() }} && steps.retool-cache.outputs.cache-hit != 'true'
-            working-directory: ./retool-config
             shell: bash
             run: |
                 ls ./config

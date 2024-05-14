@@ -38,4 +38,4 @@ runs:
             run: |
                 pwd
                 printf 'y\n' | pipenv run retool --update
-                ls
+                ls ./config

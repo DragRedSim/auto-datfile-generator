@@ -37,4 +37,4 @@ runs:
             shell: bash
             run: |
                 pwd
-                pipenv run retool --update < echo 'y'
+                yes | pipenv run retool --update

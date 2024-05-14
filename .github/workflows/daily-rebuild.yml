@@ -12,8 +12,16 @@ env:
   tag: latest
   
 jobs:
+  checkout:
+    runs-on: ubuntu-latest
+    steps:
+      - id: checkout-repo
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
   fbneo:
     runs-on: ubuntu-latest
+    needs: checkout
     steps:
       - uses: ./.github/workflows/prepare-build-env
       - name: Download dats and generate profile.xml for FinalBurn Neo
@@ -30,6 +38,7 @@ jobs:
 
   redump:
     runs-on: ubuntu-latest
+    needs: checkout
     steps:
       - uses: ./.github/workflows/prepare-build-env
       - name: Download dats and generate profile.xml for Redump
@@ -39,6 +48,7 @@ jobs:
 
   no-intro:
     runs-on: ubuntu-latest
+    needs: checkout
     steps:
       - uses: ./.github/workflows/prepare-build-env
       - name: Download dats and generate profile.xml for No-Intro
@@ -51,6 +61,7 @@ jobs:
     
   translated-en:
     runs-on: ubuntu-latest
+    needs: checkout
     steps:
       - uses: ./.github/workflows/prepare-build-env
       - name: Download dats and generate profile.xml for Translated-En set from Archive.org
@@ -58,16 +69,24 @@ jobs:
         run: pipenv run python src/translated-en.py
       - uses: ./.github/workflows/update-release-files
       
-  #htgd:
   #HTGD disabled for now
+  
+  #htgd:
+  # runs-on: ubuntu-latest
+  # needs: checkout
+  # steps:
   #  - uses: ./.github/workflows/prepare-build-env
   #  - name: Download dats and generate profile.xml for HTGD
   #    if: ${{ ! cancelled() }}
   #    run: pipenv run python src/smdb.py
   #  - uses: ./.github/workflows/update-release-files
       
-  #dats-site:
   #dats.site disabled for now
+
+  #dats-site:
+  # runs-on: ubuntu-latest
+  # needs: checkout
+  # steps:
   #  - uses: ./.github/workflows/prepare-build-env
   #  - name: Download dats and generate profile.xml for dats.site
   #    if: ${{ ! cancelled() }}

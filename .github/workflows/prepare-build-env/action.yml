@@ -2,7 +2,6 @@ name: Prepare build environment
         
 runs:
     using: composite
-    runs-on: ubuntu-latest
     steps:
         -   id: setup-python
             uses: actions/setup-python@v5
